@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cocos2d</title>
+</head>
+<body>
+
+【1】、Cocos2d-JS 介绍
+
+Cocos2d-JS是跨全平台的游戏引擎，采用原生JavaScript语言，可发布到包括Web平台、iOS、Android、Windows Phone8、Mac、Windows等平台，引擎基于MIT开源协议，完全免费，易学易用，拥有活跃的社区支持。Cocos2d-JS让2d的游戏编程门槛更低，使用更加容易和高效，和其他类似游戏框架相比，它定义了更加清晰的2D游戏编程的基本组件，采用易学易用的API设计，并采用全球领先、具备原生性能的脚本绑定解决方案实现游戏的跨原生平台发布，开发效率更高，使用上更简单。
+Cocos2d-JS是Cocos2d-x的JavaScript版本，融合了Cocos2d-HTML5和Cocos2d-x JavaScript Bindings，它支持Cocos2d-x的所有核心特性并提供更简单易用的JavaScript风格API，基于Cocos2d-JS的框架，您可以方便的使用JavaScript语言进行游戏开发，快速构建原型进行验证，并让您的游戏跑在所有支持HTML5规范的浏览器上，由于Cocos2d-html5的API和Cocos2d-x JSB的API高度一致，可让您的游戏不用修改代码或者修改少量代码就可以打包为原生性能表现的混合游戏，发布到原生应用市场，从而实现，一次编码全平台部署的效果，带给您前所未有的机遇。
+
+1 为什么选择Cocos2d-JS
+友好的JavaScript API设计
+强有力的Cocos Creator编辑器支持，提升游戏开发效率
+全平台支持，无需插件，一次开发，全平台运行-网页，桌面，移动和主机平台
+可在浏览器中完成游戏的开发和调试，然后发布到网页，移动还有主机平台
+丰富的功能包括sprites,actions,animations,particles,transitions,timers,events(touch\keyboard\accelerometer\mouse),sound,file IO,persistence,skeletal animations原生性能，成熟可靠
+
+【2】、获取支持
+
+【3】、浏览器开发环境介绍
+
+1 用Cocos2d-JS Lite 版本开发网页游戏/微信游戏（浏览器开发环境介绍）
+
+【4】、用Cocos Console工作流开发网页/原生平台游戏（JSB开发环境简介）
+
+Cocos2d-JS最引以为傲的能力就是完美的一次开发，全平台部署的能力，得益于3.0版本中Web引擎和Native引擎的整合，Cocos2d-JS为Web和各原生平台开发提供了一套统一的工作流，开发者只需关注自己的JavaScript代码，我们提供了Cocos Console工具帮助用户管理开发和发布的流程。
+
+Cocos2d-JS引擎
+
+cocos new -l js ProjectName
+
+【5】、搭建Cocos2d-JS v3.x开发环境
+
+【6】、创建第一个场景
+
+var StartLayer = cc.layer.extend({
+    ctor: function () {
+        this._super()
+        var size = cc.winSize
+        var helloLabel = new cc.LabelTTF("Hello World", "", 38)
+        helloLabel.x = size.width / 2
+        helloLabel.y = size.height /2
+        this.addChild(helloLabel)
+
+        return true
+    }
+})
+
+var StartScene = cc.Scene.extend({
+    onEnter: function () {
+        this._super()
+        var layer = new StartLayer()
+        this.addChild(layer)
+    }
+})
+
+cc.LoaderScene.preload(g_resources, function () {
+    cc.director.runScene(new StartScene());
+}, this)
+
+【7】、添加内容到场景
+
+精灵、
+标签、
+菜单、Menu类驱动一个菜单的主类，它包含描述文字、按钮和触发器的菜单列表，在使用过程中，首先你需要创建一个或多个菜单项（MenuItem），然后用这些菜单项初始化菜单对象，最后将这个初始化了的菜单对象添加到Layer中
+
+this.bgSprite = new cc.Sprite(res.BackGround_png)
+this.bgSprite.attr({
+    x: size.width / 2,
+    y: size.height / 2
+})
+this.addChild(this.bgSprite, 0)
+
+var startItem = new cc.MenuItemImage(
+    res.Start_N_png,
+    res.Start_S_png,
+    function () {
+        cc.log("Menu is clicked!")
+        cc.director.replaceScene(cc.TransitionPageTurn(1, new PlayScene(), false))
+    },
+    this
+)
+startItem.attr({
+    x: size.width / 2,
+    y: size.height / 2,
+    anchorX: 0.5,
+    anchorY: 0.5
+})
+var menu = new cc.Menu(startItem)
+menu.x = 0
+menu.y = 0
+this.addChild(menu, 1)
+
+【8】、使用动作让场景活起来
+
+动作（Action），用来描述游戏节点行为规范的一个类，引擎支持很多动作，其中Action类时所有动作的基类，它创建的每个对象都代表一个动作，动作作用于Node，因此每个动作都需要由Node对象来执行，它本身并不是一个能在屏幕中显示的对象
+
+var PlayLayer = cc.Layer.extend({
+    bgSprite: null,
+    SushiSprites: null,
+    ctor: function () {
+        this._super()
+        this.SushiSprites = []
+        var size = cc.WinSize
+        this.bgSprite = new cc.Sprite(res.BackGround_png)
+        this.bgSprite.attr({
+            x: size.width / 2,
+            y: size.height / 2,
+            rotation: 180
+        })
+        this.addChild(this.bgSprite, 0)
+        this.addSushi()
+        this.schedule(this.update, 1, 16 * 1024, 1)
+        return true
+    },
+    addSushi: function () {
+        var sushi = new cc.Sprite(res.Sushi_png)
+        var size = cc.WinSize
+
+        var x = sushi.width / 2 + size.width / 2 * cc.randomTo1()
+        sushi.attr({
+            x: x,
+            y: size.height - 30
+        })
+
+        var dropAction = cc.MoveTo.create(4, cc.p(sushi.x, -30))
+        sushi.runAction(dropAction)
+        this.SushiSprites.push(sushi)
+        this.addChild(sushi, 5)
+    },
+    update: function () {
+        this.addSushi()
+        this.removeSushi()
+    },
+    removeSushi: function () {
+        for (var i = 0; i < this.SushiSprites.length; i ++ ) {
+            cc.log("removeSushi")
+            if (0 == this.SushiSprites[i].y) {
+                cc.log("================remove: " + i)
+                this.SushiSprites[i].removeFromParent()
+                this.SushiSprites[i] = undefined
+                this.SushiSprites.splice(i, 1);
+                i = i -1
+            }
+        }
+    }
+})
+
+var PlayScene = cc.Scene.extend({
+    onEnter: function () {
+        this._super()
+        var layer = new PlayLayer()
+        this.addChild(layer)
+    }
+})
+
+cc.LoaderScene.preload(g_resources, function () {
+    cc.director.runScene(new PlayScene())
+}, this)
+
+三种schedule
+schedule(callback_fn, interval, repeat, delay)
+scheduleOnce(callback_fn, delay)
+scheduleUpdate()
+
+【9】、场景转换
+
+pushScene
+popScene
+replaceScene
+
+cc.LoaderScene.preload(g_resources, function () {
+    cc.director.runScene(new PlayScene())
+}, this)
+
+TransitionFadeDown\TransitionPageTurn\TransitionJumpZoom
+
+【10】、使用事件管理器创建用户交互
+
+cc.spriteFrame\cc.Animation\cc.Animate
+
+var SushiSprite = cc.Sprite.extend({
+    onEnter: function () {
+        cc.log("onEnter")
+        this._super()
+        this.addTouchEventListener()
+    },
+    onExit: function () {
+        cc.log("onExit")
+    },
+    addTouchEventListenser: function () {
+        this.touchListener = cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            onTouchBegan: function (touch, event) {
+                var pos = touch.getLocation()
+                var target = event.getCurrentTarget()
+                if (cc.rectContainsPoint(target.getBoundingBox(), pos)) {
+                    cc.log("touched")
+
+                    target.stopAllActions()
+                    var ac = target.disappearAction
+                    var seqAc = cc.Sequence.create(ac, cc.CallFunc.create(function () {
+                        cc.log("callfunc...")
+                        target.removeFromParent()
+                    }, target))
+                    target.runAction(seqAc)
+
+                    return true
+                }
+                return false
+            }
+        })
+        cc.eventManager.addListener(this.touchListener, this)
+    }
+})
+
+var sushi = new SushiSprite(res.Sushi_png)
+
+cc.spriteFrameCache.addSpriteFrames(res.Sushi_plist)
+
+createDisappearAction: function () {
+    var frames = []
+    for (var i = 0; i < 11; i ++) {
+        var str = "sushi_1n_" + i + ".png"
+        var frame = cc.spriteFrameCache.getSpriteFrame(str)
+        frames.push(frame)
+    }
+    var animation = new cc.Animation(frames, 0.02)
+    var action = new cc.Animate(animation)
+
+    return action
+}
+
+disappearAction: null
+
+this.disappearAction = this.createDisappearAction()
+this.disappearAction.retain()
+
+this.disappearAction.release()
+
+this.scoreLabel = new cc.LabelTTF("score:0", "Arial", 20)
+this.scoreLabel.attr({
+    x: size.width / 2 + 100,
+    y: size.height - 20
+})
+this.addChild(this.scoreLabel, 5)
+
+this.timeoutLabel = cc.LabelTTF.create("" + this.timeout, "Arial", 30)
+this.timeoutLabel.x = 20
+this.timeoutLabel.y = size.height - 20
+this.addChild(this.timeoutLabel, 5)
+
+addScore: function () {
+    this.score += 1
+    this.scoreLabel.setString("score:" + this.score)
+}
+
+timer: function () {
+    if (this.timeout == 0) {
+        var gameOver = new cc.LayerColor(cc.color(225, 225, 225, 100))
+        var size = cc.winSize
+        var titleLabel = new cc.LabelTTF("Game Over", "Arial", 38)
+        titleLabel.attr({
+            x: size.width / 2,
+            y: size.height / 2,
+        })
+        gameOver.addChild(titleLabel, 5)
+        var TryAgainItem = new cc.MenuItemFont("Try Again", function () {
+            cc.log("Menu is clicked!")
+            var transition = cc.TransitionFade(1, new PlayScene(), cc.color(255, 255, 255, 255));
+            cc.direction.runScene(transition)
+        }, this)
+        TryAgainItem.attr({
+            x: size.width / 2,
+            y: size.height / 2 - 60,
+            anchorX: 0.5,
+            anchorY: 0.5
+        })
+
+        var menu = new cc.Menu(TryAgainItem)
+        menu.x = 0
+        menu.y = 0
+        gameOver.addChild(menu, 1)
+        this.getParent().addChild(gameOver)
+
+        this.unschedule(this.update)
+        this.unschedule(this.timer)
+    }
+    this.timeout -= 1
+    this.timeoutLabel.setString("" + this.timeout)
+}
+
+this.schedule(this.timer, 1, this.timeout, 1)
+
+【11】、Cocos2d-JS项目结构介绍
+
+Web引擎模块
+
+core
+actions
+audio
+menus
+labels
+ccui
+shape-nodes
+render-texture
+particle
+progress-timer
+transition
+text-input
+tilemap
+parallax
+editbox
+clipping-nodes
+motion-streak
+node-grid
+actions3d
+gui
+cocostudio
+ccbreader
+ccpool
+pluginx
+plugin-facebook
+socketio
+box2d
+chipmunk
+spine
+cocos2d
+extensions
+external
+
+【12】、cc.game对象和游戏启动流程
+
+cc.game是Cocos2d-JS的游戏对象，主要职责包括，配置的读取，引擎的加载，游戏脚本的加载，以及游戏的启动
+
+onStart
+run
+prepare
+
+cc.game.onStart = function () {
+    cc.loaderScene.preload(resource_list, function () {
+        cc.director.runScene(new MyScene())
+    }, this)
+}
+cc.game.run()
+
+cc.game.prepare()
+
+document.getElementById("myBtn").addEventListener("click", function () {
+    cc.game.run()
+})
+
+cc.game.EVENT_HIDE
+cc.game.EVENT_SHOW
+
+cc.eventManager.addCustomListener(cc.game.EVENT_HIDE, function () {})
+cc.eventManager.addCustomListener(cc.game.EVENT_SHOW, function () {})
+
+游戏进程启动流程：
+首先开始加载引擎相关脚本，在Web中加载Web引擎本身，在原生应用中则会加载引擎依赖的附加JS脚本
+加载用户JS脚本
+收集系统和平台相关信息，初始化渲染器
+启动cc.director的游戏主循环逻辑
+调用onStart入口函数以执行用户的启动逻辑
+
+【13】、Cocos坐标系统
+
+cc.winSize 游戏窗口的大小
+cc.visibleRect 游戏的可视范围矩形以及相对于游戏窗口的位置
+topLeft
+topRight
+bottomLeft
+bottomRight
+center
+top
+bottom
+left
+right
+width
+height
+
+坐标系转换
+convertToNodeSpace--将世界坐标转换为本地坐标系中的坐标
+
+var point = node1.convertToNodeSpace(node2.getPosition())
+
+convertToWorldSpace
+
+var point = node1.convertToWorldSpace(node2.getPosition())
+
+convertToNodeSpaceAR--将世界坐标转换为本地坐标系中相对于锚点的坐标
+convertToWorldSpaceAR--将本地坐标相对于锚点的位置转换为世界坐标系中的坐标
+
+【14】、屏幕适配方案
+
+cc.view.setDesignResolutionSize(320, 480, cc.ResolutionPolicy.SHOW_ALL)
+
+cc.view.setResolutionPolicy(cc.ResolutionPolicy.NO_BORDER)
+
+cc.view.resizeWithBrowserSize(true)
+
+cc.view.setResizeCallback(function () {
+
+})
+
+cc.screen.requestFullScreen(targetElement, onFullScreenCallback)
+cc.screen.fullScreen()
+cc.screen.exitFullScreen()
+
+【15】、树形场景结构
+
+cc.Node
+cc.Scene
+
+var scene = new cc.Scene()
+scene.addChild(title_node, -2)
+scene.addChild(label_node)
+scene.addChild(sprite_node, 1)
+
+【16】、游戏导演
+
+什么是游戏的导演
+Cocos2d-JS中的导演是一个对象，它负责设置游戏的运行环境，控制游戏的主循环并且管理场景和场景的切换，这个章节将介绍导演对象的主要任务和它是怎样运行的
+
+cc.director.runScene(scene)
+var scene = cc.director.getRunningScene()
+var scene = cc.director.pushScene(scene)
+cc.director.popScene()
+cc.director.popToRootScene()
+
+var transitionTime = 2
+var nextScene = new cc.Scene()
+var transitionScene = new cc.TransitionProgressInOut(transitionTime, nextScene)
+cc.director.runScene(transitionScene)
+
+var paused = cc.director.isPaused()
+
+var interval = cc.director.getAnimationInterval()
+cc.director.setAnimationInterval(val)
+
+var scale = cc.director.getContentScaleFactor()
+cc.director.setContentScaleFactor(scaleFactor)
+
+var origin = cc.director.getVisibleOrigin()
+var size = cc.director.getVisibleSize()
+
+var winSize = cc.director.getWinSize()
+var winSizeInPixel = cc.director.getWinSizeInPixels()
+
+var isPlaying = cc.director.isDisplayStats()
+cc.director.setDisplayStats(displayStats)
+
+var view = cc.director.getOpenGLView()
+cc.director.setOpenGLView(openGLView)
+
+cc.director.getProjection()
+cc.director.setProjection(projection)
+
+var node = cc.Node()
+node.scheduleUpdate()
+node.schedule(callback, interval, repeat, delay)
+node.scheduleOnce(callback, delay)
+node.unschedule(callback)
+
+node.unscheduleAllCallbacks()
+
+所有任务的回调函数会在自己的目标节点环境下被执行，也就是说，回调函数中的this对象将会指向目标节点
+即使delay延时为0的情况下，任务回调函数的第一次执行也是在注册任务之后的下一帧中
+
+动作管理器是导演对象另一个重要的内部系统，它管理当前运行场景中的所有动作，它会在每一帧调用所有进行中动作的update函数，动作系统的细节
+
+cc.Director.EVENT_AFTER_DRAW
+cc.Director.EVENT_AFTER_VISIT
+cc.Director.EVENT_AFTER_UPDATE
+cc.Director.EVENT_PROJECTION_CHANGED
+
+【17】、Cocos2d Console使用手册
+
+【18】、游戏启动流程
+
+cc.game.onStart = function () {
+    cc.LoaderScene.preload(resouce_list, function () {
+        cc.director.runScene(new MyScene())
+    }, this)
+}
+cc.game.run()
+
+cc.game.onStart = function () {
+    cc.LoaderScene.preload(resource_list, function () {
+        cc.director.runScene(new MyScene())
+    }, this)
+}
+cc.game.prepare()
+
+document.getElementById("myBtn").addEventListener("click", function () {
+    cc.game.run()
+})
+
+debugMode--
+DEBUG_MODE_NONE
+DEBUG_MODE_INFO
+DEBUG_MODE_WARN
+DEBUG_MODE_ERROR
+DEBUG_MODE_INFO_FOR_WEB_PAGE
+DEBUG_MODE_WARN_FOR_WEB_PAGE
+DEBUG_MODE_ERROR_FOR_WEB_PAGE
+
+enginDir: "engineDir",
+dependencies: "dependencies",
+debugMode: "debugMode",
+showFPS: "showFPS",
+frameRate: "frameRate",
+id: "id",
+renderMode: "renderMode",
+jsList: "jsList",
+classReleaseMode: "classReleaseMode"
+
+cc.game.config[cc.game.CONFIG_KEY.showFPS]
+
+cc.eventManager.addCustomListener(cc.game.EVENT_HIDE, function () {})
+cc.eventManager.addCustomListener(cc.game.EVENT_SHOW, function () {})
+
+【19】、基础数据类型
+
+坐标
+var point1 = cc.p()
+var point2 = cc.p(100, 100)
+var point3 = cc.p(point2)
+
+尺寸
+var size1 = cc.size()
+var size2 = cc.size(100, 100)
+var size3 = cc.size(size2)
+
+区域
+var rect1 = cc.rect()
+var rect2 = cc.rect(100, 100, 100, 100)
+var rect3 = cc.rect(rect2)
+
+颜色
+var color1 = cc.color()
+var color2 = cc.color(255, 255, 255)
+var color3 = cc.color(255, 255, 255, 255)
+var color4 = cc.color(color2)
+var color5 = cc.color.white
+
+cc.color.WHITE
+cc.color.YELLOW
+cc.color.BLUE
+cc.color.GREEN
+cc.color.RED
+cc.color.MAGENTA
+cc.color.BLACK
+cc.color.ORANGE
+cc.color.GRAY
+
+【20】、project.json
+
+debugMode
+
+【21】、Web 引擎模块化
+
+module
+配置各个模块的js列表，key名即为模块名称，这些key名将会在project.json的module字段中使用，倘若不清楚project.json里面究竟有哪些模块可以配置，就可以直接查看该文件
+
+"menus": [
+    "core",
+    "actions",
+    "cocos2d/menus/CCMenuItem.js",
+    "cocos2d/menus/CCMenu.js"
+]
+
+【22】、系统信息
+
+将原来的cc.Browser以及sys合并
+
+cc.sys.LANGUAGE_ENGLISH
+
+cc.sys.MULTIPLE_AUDIO_WHITE_LIST
+cc.sys.BROWSER_TYPE_***
+
+cc.sys.language
+cc.sys.isNative
+cc.sys.isMobile
+cc.sys.browserType
+cc.sys._supportWebAudio
+cc.sys._supportRender
+cc.sys.localStorage
+cc.sys.capabilities
+cc.sys.os
+cc.sys.garbageCollect
+cc.sys.dumpRoot
+cc.sys.restartVM
+cc.sys.version
+
+cc.openURL
+
+cc.sys.OS_WINDOWS
+cc.sys.OS_IOS
+cc.sys.OS_OSX
+cc.sys.OS_UNIX
+cc.sys.OS_LINUX
+cc.sys.OS_ANFROID
+cc.sys.OS_UNKNOWN
+
+【23】、单例对象
+
+cc.SpriteFrameCache.getInstance().addSpriteFrames(s_boxs_plist)
+var boxFrame = cc.SpriteFrameCache.getInstance().getSpriteFrame("box_normal_00.png")
+var sprite = cc.Sprite.createWithSpriteFrame(boxFrame)
+
+cc.s_sharedSpriteFrameCache.addSpriteFrames(s_boxs_plist)
+var myCache = new cc.SpriteFrameCache()
+
+cc.configuration
+cc.shaderCache
+cc.textureCache
+cc.animationCache
+cc.spriteFrameCache
+cc.screen
+cc.tiffReader
+cc.imeDispatcher
+
+ccs.guiReader
+ccs.sceneReader
+ccs.dataReaderHelper
+ccs.spriteFrameCacheHelper
+ccs.armatureDataManager
+ccs.actionManager
+ccs.triggerManager
+ccs.objectFactory
+
+cc.audioEngine
+cc.director
+cc.view
+cc.saxParser
+cc.plistParser
+
+cc.view
+
+cc.spriteFrameCache.addSpriteFrames(s_boxs_plist)
+var boxFrame = cc.spriteFrameCache.getSpriteFrame("box_normal_00.png")
+var sprite = cc.Sprite.createWithSpriteFrame(boxFrame)
+
+【24】、对象构造和类继承
+
+var sprite = new cc.Sprite(filename, rect)
+var sprite = new cc.Sprite(texture, rect)
+var sprite = new cc.Sprite(spriteFrameName)
+
+var MySprite = cc.Sprite.extend({
+    ctor: function () {
+        this._super()
+    }
+})
+
+【25】、属性风格API
+
+node.attr({
+    x: 20,
+    y: 20,
+    anchorX: 0.5,
+    anchorY: 0.5,
+    width: 400,
+    height: 300,
+    scale: 2
+})
+
+【26】、统一create函数
+
+【27】、cc.loader
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

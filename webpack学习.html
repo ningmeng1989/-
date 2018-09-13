@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>webpack学习</title>
+</head>
+<body>
+
+---------- 概念 ----------
+
+入口起点
+输出
+模式
+loader
+插件
+配置
+模块
+模块解析
+依赖图
+mainfest
+构建目标
+模块热替换
+
+const path = require('path');
+
+module.exports = {
+    mode: 'production',         // 'production' | 'development' | 'none'
+    mode: 'production',         // enable many optimizations for production builds
+    mode: 'development',         // enable useful tool for development
+    mode: 'none',         // no defaults
+    // choose mode tells webpack to use its bulit-in optimization accordingly
+
+    entry: './app/entry',       // string | object | array
+    entry: ['./app/entry1', './app/entry2'],
+    entry: {
+        a: './app/entry-a',
+        b: ['./app/entry-b1', './app/entry-b2']
+    },
+    // 这里应用程序开始执行，webpack开始打包
+
+    output: {
+    // webpack如何输出结果的相关选项
+        path: path.resolve(__dirname, 'dist'),
+        // 所有输出文件的目标路径，必须是绝对路径（使用Node.js的path模块）
+
+        filename: 'bundle.js',      // string
+        filename: '[name].js',      // 用于多个入口点
+        filename: '[chunkhash].js'  // 用于长效缓存
+
+        publicPath: '/assets/',     // string
+        publicPath: '',
+        publicPath: 'https://cdn.example.com'   // 输出解析文件的目录，url相对于HTML页面
+
+        library: 'MyLibrary',       // string 导出库的名称
+
+        libraryTarget: 'umd',       // 通用模块定义
+        libraryTarget: 'umd2',       // 通用模块定义
+        libraryTarget: 'commonjs2',       // exported with module.exports
+        libraryTarget: 'commonjs-module',       // 使用module.exports导出
+        libraryTarget: 'commonjs',       // 作为exports的属性导出
+        libraryTarget: 'amd',       // 使用AMD定义方法来定义
+        libraryTarget: 'this',       // 在this上设置属性
+        libraryTarget: 'var',       // 变量定义于根作用域下
+        libraryTarget: 'assign',       // 盲分配
+        libraryTarget: 'window',       // 在window对象上设置属性
+        libraryTarget: 'global',       // property set to global object
+        libraryTarget: 'jsonp',       // jsonp wrapper
+        // 导出库（exported library）的类型
+
+        pathinfo: true,     // 在生成代码时，引入相关的模块，导出，请求等有帮助的路径信息
+
+        chunkFilename: '[id].js',
+        chunkFilename: '[chunkhash].js',        // 长效缓存，附加分块的文件名模板
+
+        jsonpFunction: 'myWebpackJsonp',        // 用于加载分块的JSONP函数名
+
+        sourceMapFilename: '[file].map',
+        sourceMapFilename: 'sourcemaps/[file].map'      // source map 位置的文件名模板
+
+        devtoolModuleFilenameTemplate:  'webpack:///[resource-path]',       // devtool中模块的文件名模板
+        devtoolFallbackModuleFilenameTemplate: 'webpack:///[resource-path]?[hash]',         // string devtool中模块的文件名模板
+
+        umdNamedDefine: true,       // 在UMD库中使用命名的AMD模块
+
+        crossOriginLoading: 'use-credentials',      // 枚举
+        crossOriginLoading: 'anonymous',
+        crossOriginLoading: false,      // 指定运行时如何发出跨域请求问题
+    },
+
+    module: {
+    // 关于模块配置
+        rules: [
+            // 模块规则（配置loader、解析器等选项）
+            {
+                test: /\.jsx?$/,
+                include: [
+                    path.resolve(__dirname, 'app')
+                ],
+                exclude: [
+                    path.resolve(__dirname, 'app/demo-files')
+                ],
+                // 这里是匹配条件，每个选项都接收一个正则表达式或字符串，test和include具有相同的作用，都是必须匹配选项，exclude是必不匹配选项
+                // 最佳实践：只在test和文件名匹配中 使用正则表达式，在include和exclude中使用绝对路径数组，尽量避免exclude，更倾向于使用include
+                issuer: {test, include, exclude},
+                // issuer条件（导入源）
+                enforce: 'pre',
+                enforce: 'post',        // 标识应用这些规则，即使规则覆盖（高级选项）
+                loader: 'babel-loader', // 应该应用的loader，它相对于上下文解析，为了更倾向，'-loader'后缀在webpack2中不再是可选的
+                options: {
+                    presets: ['es2015']
+                }
+                // loader的可选项
+            },
+            {
+                test: /\.html$/,
+                test: '\.html$',
+                use: [
+                    'htmllint-loader',
+                    {
+                        loader: 'html-loader',
+                        options: {
+                        }
+                    }
+                ]
+            },
+            { oneOf: [] },      // 只使用这些嵌套规则之一
+            { rules: [] },      // 使用所有这些嵌套规则（合并可用条件）
+            { resource: { and: [] } },      // 仅当所有条件都匹配时才匹配
+            { resource: { or: [] } },      //
+            { resource: [] },               // 任意条件匹配时匹配
+            { resource: { not: } }          // 条件不匹配时匹配
+        ],
+
+        noParse: [
+            /special-library\.js$/
+        ],
+        // 不解析这里的模块
+
+        unknownContextRequest: '.',
+        unknownContextRecursive: true,
+        unknownContextRegExp: /^\.\/.*$/,
+        unknownContextCritical: true,
+        exprContextRequest: '.',
+        exprContextRegExp: /^\.\/.*$/,
+        exprContextRecursive: true,
+        exprContextCritical: true,
+        wrappedContextRegExp: /.*/,
+        wrappedContextRecursive: true,
+        wrappedContextCritical: false
+        // specifies default behavior for dynamic requests
+    },
+
+    resolve: {
+        // 解析模块请求的选项（不适用于对loader解析）
+        modules: [
+            'node_modules',
+            path.resolve(__dirname, 'app')
+        ],
+        // 用于查找模块的目录
+
+        extensions: ['.js', '.json', '.jsx', '.css'],
+        // 使用的扩展名
+
+        alias: {
+        // 模块别名列表
+            'module': 'new-module',
+            // 起别名： 'module'->'new-module' 和 'module/path/file'->'new-module/path/file'
+            'only-module$': 'new-module',
+            // 起别名： 'only-module'->'new-module'，但不匹配'only-module/path/file'->'new-module/path/file'
+            'module': path.resolve(__dirname, 'app/third/module.js')
+            // 起别名 'module'->'./app/third/module.js' 和 'module/file' 会导致错误，模块别名相对于当前上下文导入
+        }
+        alias: [{
+            name: 'module',
+            alias: 'new-module',
+            onlyModule: true
+            // 如果为true，只有'module'是别名；如果为false，'module/inner/path'也是别名
+        }],
+
+        // 高级解析选项
+        symlinks: true,     // 遵循符号链接到新位置
+        descriptionFiles: ['package.json'],     // 从package描述中读取的文件
+        mainFields: ['main'],       // 从描述文件中读取的属性，当请求文件夹时
+        aliasFields: ['browser'],       // 从描述文件中读取的属性，以对此package的请求起别名
+        enforceExtension: false,        // 如果为true，请求必不包括扩展名；如果为false，请求可以包括扩展名
+        moduleExtension: ['-module'],
+        enforceModuleExtension: false,      // 类似extensions/enforceExtension，但是用模块名替换文件
+        unsafeCache: true,
+        unsafeCache: {},        // 为解析的请求启用缓存，这是不安全，因为文件夹结构可能会改动，但是性能改善是很大的
+        cachePredicate: (path, request) => true,        // predicate function which selects request for caching
+        plugins: []         // 应用于解析器的附加插件
+    },
+
+    performance: {
+        hints: 'warning',       // 枚举
+        maxAssetSize: 200000,       // 整数类型（以字节为单位）
+        maxEntrypointSize: 400000,
+        assetFilter: function(assetFilename) {
+            return assetFilename.endsWith('.css') || assetFilename.endsWith('.js');
+        }
+    },
+
+    devtool: 'source-map',      // enum
+    devtool: 'inline-source-map',       // 嵌入到源文件中
+    devtool: 'eval-source-map',      // 将SourceMap嵌入到每个模块中
+    devtool: 'hidden-source-map',       // SourceMap不在源文件中引用
+    devtool: 'cheap-source-map',        // 没有模块映射（module mappings）的SourceMap低级变体（cheap-variant）
+    devtool: 'cheap-module-source-map',     // 有模块映射的SourceMap低级变体
+    devtool: 'eval',        // 没有模块映射，而是命名模块，以牺牲细节达到最快
+    devtool: 'source-map',      // 通过在浏览器调试工具中添加元信息增强调试，牺牲了构建速度的'source-map'是最详细的
+
+    context: __dirname,     // webpack的主目录，entry和module.rules.loader选项，相对于此目录解析
+
+    target: 'web',      // 枚举
+    target: 'webworker',      // WebWorker
+    target: 'node',     // node.js通过require
+    target: 'async-node',       // Node.js通过fs and vm
+    target: 'node-webkit',      // nw.js
+    target: 'electron-main',        // electron，主进程
+    target: 'electron-renderer',        // electron，渲染进程
+    target: (compiler) => {...},     // 自定义
+    // 包应该允许的环境，更改块加载行为和可用模块
+
+    externals: ['react', /^@angular\//],
+    externals: 'react',
+    externals: /^[a-z\-]+($|\/)/,
+    externals: {
+        angular: 'this angular',
+        react: {
+            commonjs: 'react',
+            commonjs2: 'react',
+            amd: 'react',
+            root: 'React'
+        }
+    },
+    externals: (request) => { return 'commonjs' + request },
+
+    stats: 'errors-only',
+    stats: {
+        assets: true,
+        colors: true,
+        errors: true,
+        errorDetails: true,
+        hash: true
+    },
+
+    devServer: {
+        proxy: {        // proxy URLs to backend development server
+            '/api': 'http://localhost:3000'
+        },
+        contentBase: path.join(__dirname, 'public'),        // boolean | string | array | static file location
+        compress: true,     // enable gzip compression
+        historyApiFallback: true,       // true for index.html upon 404, object for multiple paths
+        hot: true,      // hot module replacement. depends on hotModuleReplacementPlugin
+        https: false,       // true for self-signed, object for cert authority
+        noInfo: true,        // only errors & warns on hot reload
+        ...
+    },
+
+    plugins: [
+        ...
+    ],
+    // 附加插件列表
+
+    resolveLoader: { }
+    // 独立解析选项的loader
+    parallelism: 1,
+    // 限制并行处理模块的数量
+    profile: true,
+    // 捕获时机信息
+    bail: true,
+    // 在第一个错误出错时抛出，而不是无视错误
+    cache: false,
+    // 禁用/启用 缓存
+    watch: true,
+    // 启用观察
+    watchOptions: {
+        aggregateTimeout: 1000,
+        // 将多个更改聚合到单个重构建
+        poll: true,
+        poll: 500,
+        // 启用轮询观察模式，必须用在不通知更改的文件系统中
+    },
+
+    node: {
+        // polyfills and mocks to run Node.js-environment code in non-Node environment
+
+        console: false,
+        global: true,
+        process: true,
+        __filename: 'mock',
+        __dirname: 'mock',
+        Buffer: true,
+        setImmediate: true
+    },
+
+    recordsPath: path.resolve(__dirname, 'build/records.json'),
+    recordsInputPath: path.resolve(__dirname, 'build/records.json'),
+    recordsOutputPath: path.resolve(__dirname, 'build/records.json'),
+
+}
+
+使用不同语言进行配置（configuration languages）
+
+entry: string | [string] | object {<key>: string | [string]} | (function: () => string | [string] | object {<key>: string | [string]})
+起点或是应用程序的起点入口，从这个起点开始，应用程序启动执行，如果传递一个数组，那么数组的每一项都会执行
+动态加载的模块不是入口起点
+简单规则：每个HTML页面都有一个入口起点，单页应用（SPA）：一个入口起点，多页应用（MPA）：多个入口起点
+entry: {
+    home: './home.js',
+    about: './about.js',
+}
+如果传入一个字符串或字符串数组，chunk会被命名为main，如果传入一个对象，则每个键会是chunk的名称，该值描述了chunk的入口起点
+
+output：位于对象最顶级键，包括了一组选项，指示webpack如何去输出、以及在哪里输出你的bundle、asset和其他你所打包或使用webpack载入的任何内容
+
+output.auxiliaryComment--辅助注释
+output.chunkFilename--此选项决定了非入口chunk文件的名称
+output.chunkLoadTimeout--chunk请求到期之前的毫秒数
+output.crossOriginLoading--只用于target是web，使用了通过script标签的JSONP来按需加载chunk false 'anonymous' 'use-credentials'
+output.jsonpScriptType--允许自定义script的类型 'text/javascript' 'module'
+output.devtoolFallbackModuleFilenameTemplate--当上面的模板字符串或函数产生重复时使用的备用内容
+output.devtoolLineToLine
+output.devtoolModuleFilenameTemplate--[absolute-resource-path][all-loader][hash][id][loaders][resource][resource-path][namespace]
+output.devtoolNamespace--
+output.filename--此选项决定了每个输出bundle的名称，这些bundle将写入到output.path选项的指定目录下，也可以使用'js/[name]/bundle.js'这样的文件夹结构
+    'bundle.js' '[name].bundle.js' '[id].bundle.js' '[name].[hash].bundle.js' '[chunkhash].bundle.js'
+    对于按需加载chunk的输出文件，使用output.chunkFilename选项来控制输出，通过loader创建的文件也不受影响，在这种情况下，必须尝试loader特定的可用选项
+    [hash] [chunkhash] [name] [id] [query]
+    output.hashDigestLength
+    如果将这个选项设为一个函数，函数将返回一个包含上面表格中替换信息的对象
+output.hashDigest--生成hash时使用的编码方式
+output.hashDigestLength--散列摘要的前缀长度，默认为20
+output.hansFunction--散列算法，默认是'md5'.支持Node.JS crypto.createHash的所有功能，可以是一个返回自定义hash的构造函数，
+output.hashSalt--一个可选的加盐值，可以通过Node.JS hash.update来更新hash
+output.hotUpdateChunkFilename--自定义热更新chunk的文件名，占位符只能是id和hash，默认值'[id].[hash].hot-update.js'
+output.hotUpdateFunction--只在target是web时使用，用于加载热更新（hot update）的JSONP函数，JSONP函数用于异步加载（async load）热更新（hot-update）chunk
+output.hotUpdateMainFilename--自定义热更新的主文件名（main filename），占位符只能是[hash]，默认值是'[hash].hot-update.json'
+output.jsonpFunction--只在target是web时使用，用于按需加载chunk的JSONP函数，JSONP函数用于异步加载（async load）chunk，或者拼接多个初始chunk（CommonsChunkPlugin, AssgressiveSplittingPlugin）
+    如果在同一个网页中使用了多个webpack runtime，则需要修改此选项，如果使用了output.library选项，library名称是自动追加的
+output.library--取决于output.libraryTarget选项的值
+output.libraryExport--
+output.libraryTarget--配置如何暴露library，可以使用下面的选项中的任意一个，注意，此选项与分配给output.lobrary的值一同使用，对于下面的所有示例，都假定将output.library的值配置为MyLibrary
+暴露为一个变量--
+通过在对象上赋值暴露--这些选项将入口起点的返回值赋值给一个特定对象的属性（此名称由output.library定义）下
+模块定义系统--这些选项将导致bundle带有更完整的模块头部，以确保与各种模块系统的兼容性，根据output.libraryTarget选项不同，output.library将具有不同的含义
+其他Targets--
+output.path
+output.pathinfo
+output.publicPath--
+output.sourceMapFilename--
+output.sourcePrefix--修改输出bundle中每行的前缀
+output.strictModuleExceptionHandling--
+output.umdNamedDefine--当使用了libraryTarget:'umd'，设置umdNamedDefine:true，会对UMD的构建过程中的AMD模块进行命名，否则就使用匿名的define
+
+模块（module）--这些选项决定了如何处理项目中的不同类型的模块
+
+module.noParse--防止webpack解析哪些任何与给定正则表达式相匹配的文件。忽略的文件中不应该含有import require define的调用，或任何其他导入机制，忽略大型的library可以提高构建性能
+module.rules--创建模块时，匹配请求的规则数组
+
+Rule条件 Rule结果 嵌套的Rule
+Rule.enforce--'pre' 'post' 指定loader种类，没有值表示是普通的loader
+Rele.exclude--
+Rele.include--
+Rule.issuer--
+Rule.loader--
+Rule.loaders--
+Rule.oneOf--
+Rule.options/Rule.query--
+Rule.parser--解析选项对象，所有应用的解析选项都将合并
+Rule.resource--
+Rule.resourceQuery--
+Rule.rules--
+Rule.test--
+Rule.use--
+条件--
+    字符串
+    正则表达式
+    函数
+    条件数组
+    对象
+    test include exclude and or not
+UseEntry--必须有一个loader属性是字符串
+
+解析（resolve）-这些选项能设置模块如何被解析，webpack提供合理的默认值，但是还是可能会修改一些解析的细节
+
+resolve--
+
+    resolve.alias--确保模块引入变得更简单
+    resolve.aliasFields--指定一个字段，例如 browser，根据此规范进行解析
+    resolve.cacheWithContext--
+    resolve.descriptionFiles--
+    resolve.enforceExtension--
+    resolve.enforceModuleExtension--
+    resolve.extensions--自动解析确定的扩展--
+    resolve.mainFields--
+    resolve.mainFiles--解析目录时要使用的文件名
+    resolve.modules--告诉webpack解析模块时应该搜索的目录
+    resolve.unsafeCache--启用会主动缓存模块，但并不安全
+    resolve.plugins--
+    resolve.symlinks--是否将符号链接解析到他们的符号链接位置
+    resolve.cachePredicate--决定请求是否应该被缓存的函数
+    resolveLoader--这组选项与resolve对象的属性集合相同，但仅用于解析webpack的loader包
+    resolveLoader.moduleExtensions--解析loader时，用到扩展名或后缀，不建议使用
+
+插件（plugins）--plugins选项用于以各种方式自定义webpack构建过程
+    webpack.optimize.CommonsChunkPlugin
+    extract-text-webpack-plugin
+    webpack-dashboard/plugin
+    webpack.optimize.UglifyJsPlugin
+    webpack.IgnorePlugin
+    webpack.DefinePlugin
+    webpack.HotModuleReplacementPlugin
+
+开发中Server（devServer）--webpack-dev-server能够用于快速开发应用程序
+    通过配置webpack-dev-server的这些选项，能够用多种方式改变其行为
+    after--在所有其他内部中间件之后执行自定义中间件的能力
+    allowedHosts--域名白名单
+    before--
+    benjour--
+    clientLogLevel--none error warning info
+    color--
+    compress--
+    contentBase--
+    disableHostCheck--
+    filename--
+    headers--
+    historyApiFallback--
+    host--
+    hot--
+    hotOnly--
+    https--
+    index--
+    info--
+    inline--
+    lazy--
+    noInfo--
+    open--
+    openPage--
+    overlay--
+    pfx--
+    pfx--
+    pfxPassphrase--
+    port--
+    proxy--
+    progress--
+    public--
+    publicPath--
+    quiet--
+    setup--
+    socket--
+    staticOptions--
+    stats--
+    stadin--
+    useLocalIp--
+    watchContentBase--
+    watchOptions--
+
+devtool()--此选项控制是否生产，以及如何生成source map
+    可以直接使用SourceMapDevToolPlugin/EvalSourceMapDevToolPlugin来替代使用devtool选项，切勿同时使用devtool选项和SourceMapDevToolPlugin/EvalSourceMapDevToolPlugin插件
+    none
+    eval
+    cheap-eval-source-map
+    cheap-module-eval-source-map
+    eval-source-map
+    cheap-source-map
+    cheap-module-source-map
+    inline-cheap-source-map
+    inline-cheap-module-source-map
+    source-map
+    inline-source-map
+    hidden-source-map
+    nosources-source-map
+
+target（构建目标）--webpack能够为多种环境或target构建编译
+    async-node
+    atom
+    electron
+    electron-main
+    electron-renderer
+    node
+    node-webkit
+    web
+    webworker
+
+watch和watchOptions
+    webpack可以监听文件变化，当他们修改后会重新编译
+    watch
+    watchOptions
+        aggregateTimeout--当第一个文件更改，会在重新构建前增加延迟
+        ignore--忽略不需watch的文件夹
+        poll--轮询时间
+
+        info-verbosity--控制生命周期消息的详细程度
+
+externals（外部扩展）--此配置选项提供了 从输出的bundle中排除依赖 的方法，相反，所创建的bundle依赖于那些存在于用户环境中的依赖
+
+    root--可以通过一个全局变量访问library
+    commonjs
+    commonjs2
+    amd
+
+    string
+    array
+    object
+    function
+    regexp
+
+performance（性能）--这些选项可以控制webpack如何通知[资源和入口起点超过指定文件限制]
+    hints--打开/关闭 提示
+    maxEntrypointSize--
+    maxAssetSize--资源是从webpack生成的任何文件，此选项根据单个资源体积，控制webpack何时生成性能提示
+    assetFilter--此属性允许webpack控制用于计算性能提示的文件
+
+Node（）--这些选项可以配置是否polyfill或mock某些Node.js全局变量和模块，这可以使最初为Node.js环境编写的代码，在其他环境中运行
+    console
+    global
+    process
+    __filename
+    __dirname
+    Buffer
+    setImmediate
+    当NodeSourcePlugin插件启用时，则会使用node-libs-browser来对Node.js核心库polyfill
+
+Stats（统计信息）--
+    errors-only
+    minimal
+    none
+    normal
+    verbose
+    对象精细控制
+    all
+    assets
+    assetsSort
+    buildAt
+    cached
+    cachedAssets
+    children
+    chunks
+    chunkModules
+    chunkOrigins
+    chunkSort
+    context
+    colors
+    depth
+    entrypoints
+    env
+    errors
+    errorDetails
+    excludeAssets
+    excludeModules
+    exclude
+    hash
+    maxModules
+    modules
+    modulesSort
+    moduleTrace
+    performance
+    providedExports
+    publicPath
+    reasons
+    timings
+    usedExports
+    versin
+    warnings
+    warningsFilter
+
+outer options（其他选项）
+    amd--
+    bail--在第一个错误出现时抛出失败结果，而不是容忍它。
+    cache--
+    loader--
+    parallelism--
+    profile--捕获一个应用程序配置文件，包括统计和提示
+    recordsPath--
+    recordsInputPath--指定读取最后一条记录的文件的名称
+    recordsOutputPath--指定记录要写入的位置
+
+---------- API ----------
+
+引导--
+    可以使用各种接口来制定编译过程，一些特性会在几个接口之间重叠，其中一些配置选项可能会从CLI标记获取，而另一些配置选项，则只能从单个接口获取
+
+    CLI--
+    模块--
+    Node--
+    loader--loader是转译模块源代码的转换规则，loader被编写为，接受源代码作为参数的函数，并返回这些转换过的新版本代码
+    plugin--插件接口可以帮助用户直接触及到编译过程，插件可以将处理函数注册到编译过程中的不同事件点上运行的生命周期钩子函数上，当执行每个钩子时，插件能够完全访问到编译（compilation）的当前状态
+
+--debug
+--devtool
+--progress
+--display-error-details
+
+    --module-bind
+    --module-bind-post
+    --module-bind-pre
+
+    --resolve-alias
+    --resolve-extensions
+    --resolve-loader-alias
+
+    --color --colors
+    --display
+    --display-cached
+    --display-cached-assets
+    --display-chunks
+    --display-depth
+    --display-entrypoints
+    --display-error-details
+    --display-exclude
+    --display-max-modules
+    --display-modules
+    --display-optimization-bailout
+    --display-origins
+    --display-provided-exports
+    --display-reasons
+
+    --sort-assets-by
+    --sort-chunks-by
+    --sort-modules-by
+
+    --verbose
+
+    --bail
+    --cache
+    --define
+    --hot
+    --labeled-modules
+    --plugin
+    --prefetch
+    --provide
+    --records-input-path
+    --records-output-path
+    --records-path
+    --target
+
+    factory
+    building
+    dependencies
+
+包含统计数据的文件（stats data）
+
+    Asset对象（）--每一个assets对象都表示一个编译出的output文件，assets都会有一个共同的结构：
+    {
+        'chunkNames': [],
+
+    }
+
+
+    Chunk对象
+    chunks对象还会包含一个来源（origins），来表示每一个chunk是从哪里来的，origins是以下的形式
+    {
+        'loc':
+        'module':
+        'moduleId':
+        'moduleIdentifier':
+        'moduleName':
+        'name':
+        'reasons':
+    }
+
+    模块对象
+    缺少了对实际参与进编译的模块的描述，这些数据又有什么意义呢，每一个在依赖图表中的模块都可以表示成以下的形式
+    {
+        'assets': [],
+        'built': true,
+        'cacheable': true,
+        'chunks': [],
+        'errors': 0,
+        'failed': false,
+        'id': 0
+    }
+
+    Node.js API
+    webpack提供了Node.js API，可以在Node.js运行时直接使用
+
+    当你需要自定义构建或开发流程时，Node.js API非常有用，因为此时所有的报告和错误处理都必须自行实现，webpack仅仅负责编译的部分，所以stats配置选项不会在webpack()调用中生效。
+    Compiler实例（Compiler Instance）
+    如果你不向webpack执行函数传入回调函数，就会得到一个webpack Compiler实例，你可以通过它手动触发webpack执行器 Compiler实例提供了一下方法
+    .run(callback)
+    .watch(watchOptions, handler)
+    通常情况下，虽然可以创建一些子compiler来代理到特定任务，然后只会创建一个主要Compiler实例。
+    Compiler基本上只是执行最低限度的功能，以维持生命周期运行的功能，它将所有的加载、打包和写入工作，都委托到注册过的插件上。
+    Compiler实例上的hooks属性，用于将一个插件，注册到Compiler的生命周期中的所有钩子事件上。
+    webpack使用[WebpackOptionsDefaulter]和WebpackOptionsApply这两个工具，通过所有内置插件，来配置Compiler实例
+    run方法用于触发所有编译时工作，完成之后，执行给定的callback函数，最终记录下来的概括信息和错误，应该在这个callback函数中获取。
+    这个API一次只支持一个并发编译，当使用run时，会等待它完成后，然后才能再次调用run或watch
+
+    hot module replacement（模块热替换）
+    如果已经通过HotModuleReplacementPlugin启用了模块热替换（Hot Module Replacement），则它的接口将被暴露在module.hot属性下面
+    if (module.hot) {
+        module.hot.accept('./library.js', function () {
+            // 使用更新过的library模块执行某些操作
+        })
+    }
+
+    accept
+    decline
+    dispose(addDisposeHandler)
+    removeDisposeHandler
+    status--取得模块热替换进程的当前状态 idle check prepare ready dispose apply abort fail
+    check--测试所有加载的模块进行更新，如果有更新，则应用它们
+    apply--继续更新进程
+        ignoreUnaccepted
+        ignoreDeclined
+        ignoreErrored
+        onDeclined
+        onUnaccepted
+        onAccepted
+        onDisposed
+        onErrored
+    addStatusHandler--注册一个函数来监听status的变化
+    removeStatusHandler--移除一个注册的状态处理函数
+
+    loader API
+    所谓loader只是一个到处为函数的JavaScript模块，loader runner会调用这个函数，然后把上一个loader产生的结果或者资源文件（resource file）传入进去，函数的this上下文将由webpack填充，并且loader runner具有一些有用方法，可以使loader改变为异步调用方式，或者获取query参数。
+    第一个loader的传入参数只有一个，资源文件（resource file）的内容，compiler需要得到最后一个loader产生的处理结果，这个处理结果应该是string或者Buffer,代表了模块的JavaScript源码，另外，还可以传递一个可选的SourceMap结果。
+    如果是单个处理结果，可以在同步模式中直接返回，如果有多个处理结果，则必须调用this.callback()。在异步模式中，必须调用this.async()，来指示loader runner等待异步结果，它会返回this.callback()回调函数，随后loader必须返回undefined并且调用该回调函数。
+
+    同步loader--无论是return还是this.callback都可以同步地返回转换后的content内容
+    异步loader--对于异步loader，使用this.async来取callback函数
+    module.exports = function (content, map, meta) {
+        var callback = this.async();
+        someAsyncOperation(content, function(err, result){
+            if (err) retrun callback(err);
+            callback(null, result, map, meta);
+        })
+    }
+
+    module.exports = function(content, map, meta) {
+
+    }
+
+    "Raw" loader
+    越过loader（Pitching loader）
+    loader总是从右到左地被调用，有些情况下，loader只关心request后面的元数据（metadata），并且忽略前一个loader的结果，在实际（从右到左）执行loader之前，会先从左到右调用loader上的pitch方法。
+
+    loader上下文
+    this.version
+    this.context
+    this.request
+    this.query
+    this.callback
+    this.async
+    this.data
+    this.cacheable
+    this.loaders
+    this.loaderIndex
+    this.resource
+    this.resourcePath
+    this.resourceQuery
+    this.target--web node
+    this.webpack
+    this.sourceMap
+    this.emitWarning
+    this.emitError
+    this.loadModule
+    this.resolve
+    this.addDependency
+    this.addContextDependency
+    this.clearDependencies
+    this.emitFile
+    this.fs
+
+模块方法（module methods）
+    import
+    export
+    import()--动态地加载模块，调用import()之处，被作为分离的模块起点，意思是，请请求的模块和它引用的所有子模块，会分离到一个单独的chunk中
+    import(
+    <!--webpackChunkName: "my-chunk-name"-->
+    <!--webpackMode: "lazy"-->
+        'module'
+    )
+    lazy
+    lazy-once
+    eager
+    weak
+
+    require
+    require.resolve
+    require.cache
+    require.ensure--commonjs动态加载依赖的唯一方法
+
+    标签模块
+    export标签
+    require标签
+
+    webpack特定的方法：
+    require.context(directory: String, includeSubdirs: Boolean, filter: RegExp)
+    require.include(dependency: String)
+
+模块变量（module variables）
+    module.loaded()
+    module.hot
+    module.id
+    module.exports
+    exports
+
+    global
+    process
+    __dirname
+    __filename
+    __resourceQuery
+    __webpack_public_path__
+    __webpack_require__
+    __webpack_chunk_load__
+    __webpack_modules__
+    __webpack_hash__
+    __non_webpack_require__
+
+Plugin API
+    插件是webpack生态系统的重要组成部分，为社区用户提供了一种强大方式来直接触及webpack的编译过程
+
+compiler钩子
+    以下声明周期钩子函数，是由compiler暴露，可以通过compiler.hooks.someHook.tap()访问，取决于不同的钩子类型，也可以在某些钩子上访问tapAsync和tapPromise
+    entryOption
+    afterPlugin
+    afterResolvers
+    environment
+    afterEnvironment
+    beforeRun
+    run
+    watchRun
+    normalModuleFactory
+    contextModuleFactory
+    beforeCompile
+    compile
+    thisCompilation
+    compilation
+    make
+    afterCompile
+    shouldEmit
+    needAdditionalPass
+    emit
+    afterEmit
+    done
+    failed
+    invaild
+    watchClose
+
+compilation钩子
+    buildModule
+    rebuildModule
+    failedModule
+    succeedModule
+    finishModule
+    finishRebuildingModule
+    seal
+    unseal
+    optimizeDependenciesBasic
+    optimizeDependencies
+    optimizeDependenciesAdvanced
+    afterOptimizeDependencies
+    optimize
+    optimizeModulesBasic
+    optimizeModules
+    optimizeModulesAdvanced
+    afterOptimizeModules
+    optimizeChunksBasic
+    optimizeChunks
+    optimizeChunksAdvanced
+    afterOptimizeChunks
+    optimizeTree
+    afterOptimizeTree
+    optimizeChunkModulesBasic
+    optimizeChunkModules
+    optimizeChunkModulesAdvanced
+    afterOptimizeChunkModules
+    shouldRecord
+    reviveModules
+    optimizeModuleOrder
+    advancedOptimizeModuleOrder
+    beforeModuleIds
+    moduleIds
+    optimizeModuleIds
+    afterOptimizeModuleIds
+    reviveChunks
+    optimizeChunkOrder
+    beforeOptimizeChunkIds
+    optimizeChunkIds
+    afterOptimizeChunkIds
+    recordModules
+    recordChunks
+    beforeHash
+    afterHash
+    recordHash
+    record
+    beforeModuleAssets
+    shouldGenerateChunkAssets
+    beforeChunkAssets
+    additionalChunkAssets
+    records
+    additionalAssets
+    optimizeChunkAssets
+    afterOptimizeChunkAssets
+    optimizeAssets
+    afterOptimizeAssets
+    needAdditionalSeal
+    afterSeal
+    chunkHash
+    moduleAsset
+    chunkAsset
+    assetPath
+    needAdditionalPass
+    childCompiler
+    normalModuleLoader
+
+resolver
+    compiler类有三种类型的内置resolver
+    --normal context loader
+    上面提到的resolver，也可以通过在配置文件使用resolve或resolveLoader选项来自定义
+
+parser
+    parser实例，是用来解析由webpack处理过的各个模块
+    evaluateTypeof
+    evaluate
+    evaluateIdentifier
+    evaluateDefinedIdentifier
+    evaluateCallExpressionMember
+    statement
+    statementIf
+    label
+    import
+    importSpecifier
+    export
+    exportImport
+    exportDeclaration
+    exportExpression
+    exportSpecifier
+    exportImportSpecifier
+    varDeclaration
+    varDeclarationLet
+    varDeclarationConst
+    varDeclarationVar
+    canRename
+    rename
+    assigned
+    assign
+    typeof
+    call
+    callAnyMember
+    new
+    expression
+    expressionAnyMember
+    expressionConditionalOperator
+    program
+
+---------- 指南 ----------
+
+---------- loaders ----------
+
+loaders
+    webpack可以使用loader来预处理文件。这允许你打包除了JavaScript之外的任何静态资源，你可以使用Node.js来很简单的编写自己的loader
+
+文件-raw-loader val-loader url-loader file-loader
+JSON-json-loader json5-loader cson-loader
+转换编译-script-loader babel-loader buble-loader traceur-loader ts-loader awesome-typescript-loader coffee-loader
+模板-html-loader pug-loader jade-loader markdown-loader react-markdown-loader posthtml-loader handlebars-loader markup-inline-loader
+样式-style-loader css-loader less-loader sass-loader postcss-loader stylus-loader
+清理和测试-mocha-loader eslint-loader jshint-loader jscs-loader coverjs-loader
+框架-vue-loader polymer-loader angular2-template-loader
+
+    AggressiveSplittingPlugin--将原来的chunk分成更小的chunk
+    BabelMiniWebpackPlugin--使用babel-minify进行压缩
+    BannerPlugin--在每个生成的chunk顶部添加banner
+    CommonsChunkPlugin--提取chunks之间共享的通用模块
+    CompressionWebpackPlugin--预先准备的资源压缩版本，使用Content-Encoding提供访问服务
+    ContextReplacementPlugin--重写require表达式的推断上下文
+    CopyWebpackPlugin--将单个文件或整个目录复制到构建目录
+    DefinePlugin--允许在编译时配置的全局变量
+    DllPlugin--为了极大减少构建时间，进行分离打包
+    EnvironmentPlugin--DefinePlugin中process.env键的简写方式
+    ExtractTextWebpackPlugin--从bundle中提取文本到单独的文件
+    HotModuleReplacementPlugin--启用模块热替换（Enable Hot Module Replacement）
+    HtmlWebpackPlugin--简单创建HTML文件，用于服务器访问
+    I18nWebpackPlugin--为bundle增加国际化支持
+    IgnorePlugin--从bundle中排除某些模块
+    LimitChunkCountPlugin--设置chunk的最小/最大限制，以微调和控制chunk
+    LoaderOptionsPlugin--用于从webpack1迁移至webpack2
+    MinChunkSizePlugin--确保chunk大小超过指定限制
+    NoEmitOnErrorsPlugin--在输出阶段时，遇到编译错误跳过
+    NormalModuleReplacementPlugin--替换与正则表达式匹配的资源
+    NpmInstallWebpackPlugin--在开发时自动安装缺少的依赖
+    ProvidePlugin--不必使用import/require使用模块
+    SourceMapDevToolPlugin--对source map进行更细粒度的控制
+    EvalSourceMapDevToolPlugin--对eval source map进行更细粒度的控制
+    UglifyjsWebpackPlugin--可以控制项目的UglifyJS的版本
+    ZopfliWebpackPlugin--通过node-zopfli将资源预先压缩的版本
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

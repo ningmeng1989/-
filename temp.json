@@ -1,0 +1,479 @@
+{
+  "statusCode": 200,
+  "message": "成功",
+  "data": {
+    "sysMenus": [
+      {
+        "id": "1",
+        "parentId": "-1",
+        "desc": "数据源管理",
+        "label": "数据源管理",
+        "rank": null,
+        "jobFlag": null,
+        "children": null,
+        "hasLeaf": false
+      },
+      {
+        "id": "4",
+        "parentId": "-1",
+        "desc": "看板管理",
+        "label": "看板管理",
+        "rank": null,
+        "jobFlag": null,
+        "children": null,
+        "hasLeaf": false
+      },
+      {
+        "id": "5",
+        "parentId": "-1",
+        "desc": "系统管理",
+        "label": "系统管理",
+        "rank": null,
+        "jobFlag": null,
+        "children": [
+          {
+            "id": "6",
+            "parentId": "5",
+            "desc": "菜单管理",
+            "label": "菜单管理",
+            "rank": null,
+            "jobFlag": null,
+            "children": null,
+            "hasLeaf": false
+          },
+          {
+            "id": "7",
+            "parentId": "5",
+            "desc": "用户管理",
+            "label": "用户管理",
+            "rank": null,
+            "jobFlag": null,
+            "children": null,
+            "hasLeaf": false
+          },
+          {
+            "id": "8",
+            "parentId": "5",
+            "desc": "权限管理",
+            "label": "权限管理",
+            "rank": null,
+            "jobFlag": null,
+            "children": null,
+            "hasLeaf": false
+          }
+        ],
+        "hasLeaf": true
+      },
+      {
+        "id": "9",
+        "parentId": "-1",
+        "desc": "指标库管理",
+        "label": "指标库管理",
+        "rank": null,
+        "jobFlag": null,
+        "children": null,
+        "hasLeaf": false
+      }
+    ],
+    "viewMenus": [
+      {
+        "id": "fa8d54f924f04d2280bf13dd81842d3a",
+        "parentId": "-1",
+        "desc": "12312",
+        "label": "目录管理",
+        "rank": null,
+        "jobFlag": null,
+        "children": [
+          {
+            "id": "4cf71ee5757745cea64ae6e1a9c097e2",
+            "parentId": "fa8d54f924f04d2280bf13dd81842d3a",
+            "desc": "晋中基地",
+            "label": "晋中基地",
+            "rank": null,
+            "jobFlag": null,
+            "children": [
+              {
+                "id": "9390deca6d0140948738d8ad10af686b",
+                "parentId": "4cf71ee5757745cea64ae6e1a9c097e2",
+                "desc": "的时代",
+                "label": "说我",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "b56b35e7c63a4f778a2e1f16c777c7e2",
+                    "parentId": "9390deca6d0140948738d8ad10af686b",
+                    "desc": "地方",
+                    "label": "生产信息总括V1",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "d6b809b2068243298bbd00029a362acb",
+                "parentId": "4cf71ee5757745cea64ae6e1a9c097e2",
+                "desc": "生成看板",
+                "label": "生成看板",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "1329bd25d0b54d0680a5082f7ce05666",
+                    "parentId": "d6b809b2068243298bbd00029a362acb",
+                    "desc": null,
+                    "label": "测试预览变慢的原因",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "b90962d9daa046f08b7bde998e9e311d",
+                    "parentId": "d6b809b2068243298bbd00029a362acb",
+                    "desc": null,
+                    "label": "在线质量概况-样式",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "ddfd874f9d054aafb0009029f0ddd38b",
+                    "parentId": "d6b809b2068243298bbd00029a362acb",
+                    "desc": "12",
+                    "label": "宝鸡-生产监控看板2",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              }
+            ],
+            "hasLeaf": true
+          },
+          {
+            "id": "77a4bb1d350742a08197ad29416fd503",
+            "parentId": "fa8d54f924f04d2280bf13dd81842d3a",
+            "desc": "晋中基地",
+            "label": "晋中基地",
+            "rank": null,
+            "jobFlag": null,
+            "children": [
+              {
+                "id": "690a6f85e72a47938c453dfeca266b00",
+                "parentId": "77a4bb1d350742a08197ad29416fd503",
+                "desc": null,
+                "label": "宝鸡看板4",
+                "rank": null,
+                "jobFlag": null,
+                "children": null,
+                "hasLeaf": false
+              }
+            ],
+            "hasLeaf": true
+          },
+          {
+            "id": "844ff789a9b94b32baea6836f261e14f",
+            "parentId": "fa8d54f924f04d2280bf13dd81842d3a",
+            "desc": "临海基地",
+            "label": "临海基地",
+            "rank": null,
+            "jobFlag": null,
+            "children": [
+              {
+                "id": "158c11e5e6444862a7095cfbf07bc7f8",
+                "parentId": "844ff789a9b94b32baea6836f261e14f",
+                "desc": "生产监控",
+                "label": "生产监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "cdd225bd412b4117a4c5295104734457",
+                    "parentId": "158c11e5e6444862a7095cfbf07bc7f8",
+                    "desc": "生产信息监控",
+                    "label": "临海生产信息总括",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "702fc7086b7a499db6e878cdbc4f5d77",
+                "parentId": "844ff789a9b94b32baea6836f261e14f",
+                "desc": "设备监控",
+                "label": "设备监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "6981f005af5d4c9bbb8d3a88a1e8b21b",
+                    "parentId": "702fc7086b7a499db6e878cdbc4f5d77",
+                    "desc": "设备监控",
+                    "label": "设备监控",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": [
+                      {
+                        "id": "d70182cea8ec4017a6693aaba3a155d2",
+                        "parentId": "6981f005af5d4c9bbb8d3a88a1e8b21b",
+                        "desc": null,
+                        "label": "看板9",
+                        "rank": null,
+                        "jobFlag": null,
+                        "children": null,
+                        "hasLeaf": false
+                      }
+                    ],
+                    "hasLeaf": true
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "7d8ee3815da44bbe917b1ac977474d4f",
+                "parentId": "844ff789a9b94b32baea6836f261e14f",
+                "desc": "质量监控",
+                "label": "质量监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "b033e32c53bc45b39e7212a9fc17d4bc",
+                    "parentId": "7d8ee3815da44bbe917b1ac977474d4f",
+                    "desc": "hehe",
+                    "label": "测试zln",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "b5054f9f6e7f481dbcd6fb01548cf467",
+                    "parentId": "7d8ee3815da44bbe917b1ac977474d4f",
+                    "desc": "在线质量概况",
+                    "label": "临海在线质量监控",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "b9afc578ea52428cbd976471a1639e5d",
+                    "parentId": "7d8ee3815da44bbe917b1ac977474d4f",
+                    "desc": null,
+                    "label": "生产信息总括V1",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "8806ade07a0b47599abb12adfa086dec",
+                "parentId": "844ff789a9b94b32baea6836f261e14f",
+                "desc": "在线质量监控",
+                "label": "在线质量监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "2f842f77e45241cfbe0dc515315ef10c",
+                    "parentId": "8806ade07a0b47599abb12adfa086dec",
+                    "desc": null,
+                    "label": "临海在线质量监控",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              }
+            ],
+            "hasLeaf": true
+          },
+          {
+            "id": "926ecc7d68114714815fa7b74c48e7ff",
+            "parentId": "fa8d54f924f04d2280bf13dd81842d3a",
+            "desc": "宝鸡基地",
+            "label": "宝鸡基地",
+            "rank": null,
+            "jobFlag": null,
+            "children": [
+              {
+                "id": "14191797dfc94eb189a698ae9853fdb5",
+                "parentId": "926ecc7d68114714815fa7b74c48e7ff",
+                "desc": "质量监控",
+                "label": "质量监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "52aaf60d699c4a3cbfd0d70564c0447c",
+                    "parentId": "14191797dfc94eb189a698ae9853fdb5",
+                    "desc": "测试",
+                    "label": "宝鸡看板5",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "69930ddffb3d4b18a358aecb2b048d36",
+                    "parentId": "14191797dfc94eb189a698ae9853fdb5",
+                    "desc": null,
+                    "label": "宝鸡看板2",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  },
+                  {
+                    "id": "70cc13d64e1d4061b4c6b93922a3d19e",
+                    "parentId": "14191797dfc94eb189a698ae9853fdb5",
+                    "desc": null,
+                    "label": "宝鸡看板4",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "3fabf0b7bf674654823a3121dbdec93b",
+                "parentId": "926ecc7d68114714815fa7b74c48e7ff",
+                "desc": "设备监控",
+                "label": "设备监控",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "d083cdc33f4e4efaa41f4ae50d12fcda",
+                    "parentId": "3fabf0b7bf674654823a3121dbdec93b",
+                    "desc": null,
+                    "label": "宝鸡看板1",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              },
+              {
+                "id": "f91db67d56254f7dbe7bcb87f8ed007f",
+                "parentId": "926ecc7d68114714815fa7b74c48e7ff",
+                "desc": "生产看板",
+                "label": "生产看板",
+                "rank": null,
+                "jobFlag": null,
+                "children": [
+                  {
+                    "id": "7c21ece6c296464cad454b4641c8c97b",
+                    "parentId": "f91db67d56254f7dbe7bcb87f8ed007f",
+                    "desc": null,
+                    "label": "宝鸡看板3",
+                    "rank": null,
+                    "jobFlag": null,
+                    "children": null,
+                    "hasLeaf": false
+                  }
+                ],
+                "hasLeaf": true
+              }
+            ],
+            "hasLeaf": true
+          },
+          {
+            "id": "c45f6bf1296a472fa3db773ca16f0a67",
+            "parentId": "fa8d54f924f04d2280bf13dd81842d3a",
+            "desc": "微信用户监控",
+            "label": "微信监控",
+            "rank": null,
+            "jobFlag": null,
+            "children": [
+              {
+                "id": "2b432235b9d847529021ff549a660e00",
+                "parentId": "c45f6bf1296a472fa3db773ca16f0a67",
+                "desc": null,
+                "label": "微信访问情况看板",
+                "rank": null,
+                "jobFlag": null,
+                "children": null,
+                "hasLeaf": false
+              }
+            ],
+            "hasLeaf": true
+          }
+        ],
+        "hasLeaf": true
+      }
+    ]
+  }
+}
+
+
+
+[{
+  id: 1,
+  label: '一级 1',
+  children: [{
+    id: 4,
+    label: '二级 1-1',
+    children: [{
+      id: 9,
+      label: '三级 1-1-1',
+      children: [{
+        id: 10,
+        label: '四级 1-1-1',
+        children: [{
+          id: 12,
+          label: '五级 1-1-1'
+        }, {
+          id: 13,
+          label: '五级 1-1-2'
+        }]
+      }, {
+        id: 11,
+        label: '四级 1-1-2'
+      }]
+    }, {
+      id: 10,
+      label: '三级 1-1-2'
+    }]
+  }]
+}, {
+  id: 2,
+  label: '一级 2',
+  children: [{
+    id: 5,
+    label: '二级 2-1'
+  }, {
+    id: 6,
+    label: '二级 2-2'
+  }]
+}, {
+  id: 3,
+  label: '一级 3',
+  children: [{
+    id: 7,
+    label: '二级 3-1'
+  }, {
+    id: 8,
+    label: '二级 3-2'
+  }]
+}],

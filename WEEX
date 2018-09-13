@@ -1,0 +1,2653 @@
+-----简介-----
+
+轻量，可扩展，高性能
+
+Device，JavaScript，Native UI
+
+Weex提供强大的跨平台能力，可以使用相同的API开发Web，Android和iOS应用，同时，我们对接口了丰富的扩展能力，这样，当你需要扩展原生组件或模块时，这将非常方便。
+
+支持VUE语法
+
+Weex是一个动态化的高扩展跨平台解决方案，在Weex代码中，您可以使用template，style，script标签编写页面或组件，然后将他们转换为JS bundle以进行部署，当服务器返回给客户端JS bundle时，JS bundle会被客户端的JavaScript引擎处理，并管理渲染native视图，调用原生API和用户交互。
+Vue File 转换为 JS Bundle
+底层：iOS RenderEngine，Android RenderEngine，H5 RenderEngine
+
+-----教程-----
+
+【1】、快速上手
+
+Weex是一套简单易用的跨平台开发方案，能以web的开发体验构建高性能、可扩展的native应用，为了做到这些，weex与vue合作，使用vue作为上层框架，并遵循w3c标准实现了统一的JSEngine和DOM API，这样一来，你甚至可以使用其他框架驱动Weex，打造三端一致的native应用。
+
+【2】、搭建开发环境
+
+使用dotWe对Weex尝鲜是一个不错的选择，但如果你想更专业的开发Weex，dotWe就不怎么够用了。
+
+1.安装依赖
+
+Weex官方提供了weex-toolkit的脚手架来辅助开发和调试，首先，需要Node.js和Weex CLi
+
+直接使用npm来安装weex-toolkit，npm i npm@latest -g更新一下npm的版本
+
+weex create awesome-project
+
+【3】、工作原理
+
+Weex表面上是一个客户端技术，但实际上它串联起了从本地开发环境到云端部署和分发的整个链路，开发者首先可以像撰写web页面一样撰写一个app的页面，然后编译成一段JS代码，形成Weex的一个JS bundle，在云端，开发者可以把生产的JS bundle部署上去，然后通过网络请求或预下发的方式传递到用户的移动应用客户端，在移动应用客户端，WeexSDK会准备好一个JS引擎，并且在用户打开一个Weex页面时执行响应的JS bundle，并在执行过程中产生各种命令发送到native端进行界面渲染或数据存储、网络通信、调用设备功能，用户交互响应等移动应用的场景实践；同时，如果用户没有安装移动应用，他仍然可以在浏览器里打开一个相同的web页面，这个页面是使用相同的页面源代码，通过浏览器里的JS引擎运行起来的。
+
+客户端JavaScript引擎
+
+客户端渲染层
+Weex目前提供了iOS和Android两个客户端的native渲染层，每个端都基于DOM模型设计并实现了标准的界面渲染接口供JavaScript引擎调用，并且结合web标准和native的特点和优势实现了一套统一的组件和模块。Weex在性能方面的表现也是非常优异的，尤其是界面首屏加载时间、native下长列表的资源开销和复用情况、CPU、内存、帧率等关键指标。当然，尽管Weex官方已经提供了一组开发者最常用的组件和模块，但
+面对丰富多样的移动应用研发需求，团队也难免力不从心，为此我们提供了灵活自由的横向扩展能力，开发者可以根据自身的清空定制属于自己的客户端组件和模块，进一步丰富Weex在客户端上的能力。
+
+浏览器渲染
+Weex除了提供了iOS和Android的客户端渲染层外，还基于Vue2.0对官方的所有组件和模块进行了封装，开发者可以基于Vue2.0用同一套源代码构建出在浏览器中相同效果的页面，并且同样可以横向扩展。
+
+【4】、Web开发体验
+
+Weex对Web标准的支持情况怎么样？
+1、HTML标签：目前Weex支持了基本的容器、文本、图片、视频等组件，HTML中几乎所有的块级标签都可以通过容器组件进行自定义模拟，inline的标签则可以通过文本组件进行自定义模拟，另外Weex还支持了input/textarea这样的表单型组件
+2、CSS：Weex支持了部分常用的CSS属性、值类型和单位，并且会根据用户反馈和在web中的使用频度陆续支持更多
+3、JavaScript：目前Weex提供了一套简化版的DOM APIs，用来操作原生界面，同时Weex在陆续支持更多的W3C Device APIs
+4、框架方面，Weex官方支持了Vue2.0，以及相关的vuex，vue-router等，同时开发者可以直接使用各种第三方JavaScript库
+5、工厂方面，Weex推荐npm包管理工具，也推荐用webpack进行JS bundle打包，并提供了weex-devtool开发工具，让开发者可以像调试Chrome一样调试Weex原生应用，同时Weex的页面发布系统、客户端缓存机制都尊重目前Web的最佳实践
+
+【5】、Vue2.x在Weex中的特色功能
+
+1、流式渲染
+在Weex中，我们可以通过<foo append="tree|node">的方式定义页面首次渲染时的渲染颗粒度，这让开发者有机会根据界面的复杂度和业务需求对首次渲染过程进行定制。append="true"表示整个节点包括其所有子节点全部生成完毕之后，才会一次性渲染到界面上，而append="node"则表示该节点会渲染在界面上作为一个容器，其子节点会稍后做进一步渲染
+
+2、表单控件绑定
+在Weex中，我们针对<input>和<textarea>这两个表单控件提供了和web体验相同的v-model指令，双向绑定
+
+3、多页面上下文隔离
+所有Weex的JS bundle公用一个JavaScript内核实例，
+
+4.transition过渡状态
+Weex支持了Vue2.x中经典的transition写法，开发者可以通过transition轻松定义一个界面在两种状态中的过渡方式
+
+【6】、一次撰写，多端运行
+
+【7】、用Weex构建移动应用
+
+移动应用需要支撑并行研发
+移动应用需要动态性
+移动应用需要开放互联
+
+整体结构设计：
+页面：首先移动应用应该可以被拆解成若干个页面，每个页面相对解耦独立，同时每个页面都有一个URL进行唯一标识
+路由：这些页面将会通过路由机制有机的串联起来，页面之间的关系是通过路由来进行调度的，常见的移动应用路由包括导航栏、tab切换等
+设备能力：以各种API或服务的方式提供出来，供页面自由使用
+
+这样的话，在构建一个完整的移动应用之前，先确定你的应用有多少页面，每个页面时什么URL，页面之间的关联和跳转逻辑是怎样的，然后梳理整个移动应用需要的所有API和服务
+
+【8】、Weex页面结构
+
+一个Weex页面结构就是一个相对独立解耦的移动应用界面，它不仅包括了界面展示、更包含了逻辑处理、设备能力使用、生命周期管理等部分
+界面
+
+1、DOM模型
+Weex页面通过类似HTML DOM的方式管理页面，首先页面会被分解为一个DOM树，每个DOM节点都代表了一个相对独立的native视图的单元，然后不同的视图单元之间通过树形结构组合在一起，构成一个完整的页面
+
+2、组件
+Weex支持文字、图片、视频等内容型组件，也支持div、list、scroller等容器型组件，还包括slider、input、textarea、switch等多种特殊的组件，Weex的界面就是由这些组件以DOM树的方式构建出来的。
+
+3、布局系统
+Weex页面中组件会按照一定的布局规范来进行排布
+盒模型：通过宽、高、边框、内外边距、边框等CSS属性描述一个组件本身的尺寸
+flexbox：通过CSS3 Flexbox布局规范定义和描述组件之间的空间分布情况
+position：支持CSS position属性中的absolute、relative、fixed、sticky位置类型，其中relative是默认值
+
+4、功能
+Weex提供了非常丰富的系统功能API，包括弹出存储、网络、导航、弹对话框和toast等，开发者可以在Weex页面上通过获取一个native module的方式引入并调用这些客户端功能API
+
+5、生命周期
+每个Weex页面都有其自身的生命周期，页面从开始被创建到最后被销毁，会经历到整个过程，这是通过对Weex页面的创建和销毁，在路由中通过SDK自行定义并实现的。
+
+-----手册-----
+
+【1】、iOS APIs
+
+1、Native对外接口
+注册SDK默认的Module、Handler和Component
+注册自定义Module、Handler和Component
+重置JSFramework
+
+2、Handler（对应于Android的Adapter）
+WXImgLoaderDefaultImpl图片下载handler，Weex会把需要设置图片的View和URL透露出来，Native端需要实现这个接口进行图片下载。WeexSDK kernel本身没有提供图片下载的默认实现
+
+3、Native和JS通信
+自定义通知事件
+用于native自定义部分和js进行实践通知，比如传递下拉事件到js，这个是在component基类的方法，可以直接使用
+事件回调
+多用于Module回调结果给js，回调类型分为2种：
+WXModuleCallback为了性能考虑，该回调只能回调通知js一次，之后会被释放，多用于一次结果
+WXModuleKeepAliveCallback可以设置是否为多次回调类型，多次回调的场景如持续监听位置的变化，并返回给js
+
+4、动态适配容器
+WeexSDK在WXSDKInstance类中提供了方法setFrame(CGRect)来改变容器的大小
+如：在导航栏从有到无过程，需要weexView的变化，可以在此时native调用该方法设置
+
+5、降级使用
+Weex处于发展阶段会增加一些新的特性和功能，但是这些新的特性和功能都必须升级SDK才能实现，对于没有升级的应用该怎么处理呢，可以使用降级功能
+所谓降级功能就是Weex无法运行的版本或者手机，可以用Weex h5来代替
+Native端可以通过接口WXSDKInstance中发onFailed回调进行处理，如果是主动降级则返回的错误domain为TemplateErrorType，Native端可以跳转到对应的H5页面，或者用其他的方式提示用户当前环境不支持Weex
+
+【2】、Android APIs
+
+WXSDKEngine是Weex对外的总入口，提供功能：
+设置相关Adapter和获取adapter
+注册自定义module和component
+重置JSFramework
+
+1、Adapter介绍
+Weex为了重用Native通用库提供了对应的接口进行设置
+IWXImgLoaderAdapter图片适配器--Weex会把需要设置图片的View和URL透露出来，Native端需要实现这个接口进行图片下载
+
+IWXHttpAdapter网络下载适配器
+Weex自定义了WXRequest和OnHttpListener，Native重载接口后可以从Request中获取URL，header等参数，网络请求完成后可以通过OnHttpListener进行回调通知，Weex提供了默认网络请求DefaultWXHttpAdapter，使用的是HttpURLConnection进行网络请求
+
+IWXUserTrackAdapter Weex相关性能数据（首屏加载时间、JS-Native通信时间、dom更新时间等）和其他通用信息
+Native实现接口后可以通过WXPerformance和params获取对应的信息
+
+Native和JS通信
+自定义事件通知
+事件回调--多用于Module回调，例如定位Module完成后需要通知JS
+
+注册滑动事件
+Weex获取滑动事件可以通过WXSDKInstance注册registerOnWXScrollListener监听
+
+自定义NavBar
+Weex提供了WXNavigatorModule进行导航控制，对应的方法可以通过设置IActivityNavBarSetter接口进行定制
+
+动态适配容器
+因为Android手机的碎片化导致屏幕适配很困难，Weex对外提供的接口render需要动态传入容器的宽高，但是传入的宽高有时会发生变化
+WXSDKInstance.setSize(int width, int height)
+
+降级使用
+Weex处于发展阶段会增加一些新的特性和功能，但是这些新的特性和功能都必须升级SDK才能实现，对于没有升级的应用应该怎么处理
+所谓降级功能就是Weex无法运行的版本或者手机，可以使用Weex h5来代替
+Native端可以通过接口IWXRenderListener中的onException方法来进行处理，如果是主动降级errCode是以"|"分割的字符，"|"前面的字符为1表示主动降级，Native端可以跳转到对应的H5yemian，或者用其他的方式提示用户当前环境不支持Weex
+
+【3】、JS Framework APIs
+
+BroadcastChannel 是Weex实例间通信的解决方案
+postMessage(message):通过消息通道发送特定消息给其他BroadcastChannel对象
+close:关闭BroadcastChannel对象，以便垃圾回收
+onmessage：Event处理函数，当BroadcastChannel对象接受到消息时触发
+
+const Stack = new BroadcastChannel('Avengers')
+Stack.onmessage = function(event) {
+    console.log(event.data);
+}
+
+const Hulk = new BroadcastChannel('Avengers')
+Hulk.postMessage("Hulk Smash!!!")
+
+message如果是一个对象，该对象不会深拷贝
+
+const a = new BroadcastChannel("app");
+const b = new BroadcastChannel("app");
+const message = {
+    list: ["A", "B"]
+};
+a.onmessage = function(event) {
+    console.assert(event.data === message)
+}
+b.postMessage(message)
+
+【4】、事件冒泡
+
+Weex2.0实现了W3C标准的事件冒泡机制
+Weex默认不会开启事件冒泡机制，需要在根元素的属性上，添加bubble="true"来开启冒泡机制
+
+stopPropagation
+在事件处理函数中，可以使用e.stopPropagation()方法来阻止本次事件向上的传递过程，e.stopPropagation只会影响当前元素以及父元素的传播，不会影响子元素的传播；bubble="true"是为了版本兼容而增加的开关机制，会全局关闭或开启冒泡机制，两者可以同时使用
+
+【5】、通用样式
+
+1、盒模型
+Weex对于长度目前只支持像素值，不支持相对单位（em、rem）
+border目前不支持类似 border: 1 solid #ff0000; 的组合写法
+可有如下写法：
+border-style border-left-style
+border-width border-left-width
+border-color border-left-color
+border-radius border-bottom-left-radius
+Weex的盒模型默认border-box
+目前在<image>组件上尚无法只定义一个或几个角的border-radius，该约束只针对iOS，Android无此约束
+overflow:hidden在Android上是默认行为，但只有下列条件满足时，一个父view才会去clip它的子view，这个限制只对Android生效，iOS不受影响
+
+2、Flexbox
+Weex布局模型基于CSS Flexbox，以便所有页面元素的排版能够一致可预测，同时页面布局能适应各种设备或者屏幕尺寸
+Flexbox包含flex容器和flex成员项
+
+Flex容器
+flex-direction:定义了flex容器中flex成员项的排列方向，可为row 或者 column，默认 column
+justify-content:定义了flex容器中flex成员项在主轴方向上如何排列以处理空白部分，可选择为 flex-start flex-end center space-between space-around
+align-items:定义了flex容器中flex成员项在纵轴方向上如何排列以处理空白部分，可选择为 stretch flex-start center flex-end
+flex属性定义了flex成员项可以占用容器中剩余空间的大小，如果所有的成员项设置相同的值flex:1，他们将平均分配剩余空间，如果一个成员项设置的值为2，那么这个成员项所占用的剩余空间是其他成员项的2倍
+
+3、定位
+Weex支持position定位，用法与CSS position类似，为元素设置position后，可通过top,right,bottom,left四个属性设置元素坐标
+position:设置定位类型，可选择为 relative absolute fixed sticky
+top
+bottom
+left
+right
+Weex不支持z-index，但靠后的元素层级越高，android不支持overflow:visible
+
+4、transform
+transform属性向元素应用2D转换，目前支持的transform声明格式：
+translate()
+translateX()
+translateY()
+scale()
+scaleX()
+scaleY()
+rotate()
+rotateX()
+rotateY()
+perspective()--Android4.1及以上版本支持
+tranform-origin: number/percentage/keyword(top/left/right/bottom)
+
+5、transition
+可以在CSS中用transition属性来提升您应用的交互性和视觉感受，transition中包括布局动画，即LayoutAnimation，现在布局产生变化的同时也能使用transition带来的流畅动画。transition允许CSS的属性值在一定的时间区间内平滑地过渡
+transition-property:允许的过渡动画的属性名，设置不同样式transition效果的键值对，默认为空，表示不执行任何transition,下列为合法的参数属性:
+width height top bottom left right backgroundColor opacity transform
+transition-duration:指定transition过渡的持续时间，默认值为0，表示没有动画效果
+transition-delay:指定请求transition过渡操作到执行transition过渡之间的时间间隔，默认值是0，表示没有延迟，在请求后立即执行transition过渡
+transition-timing-function:ease ease-in ease-out ease-in-out linear cubic-bezier
+
+Weex支持四种伪类: active focus disabled enabled
+所有组件都支持active,但只有input组件和textarea组件支持focus, enabled, disabled
+
+6、线性渐变
+所有组件支持线性渐变
+background-image: linear-gradient(to top, #a80077, #66ff00)
+暂不支持radial-gradient
+目前只支持两种颜色的渐变
+to right
+to left
+to bottom
+to top
+to bottom right
+to top left
+
+7、阴影（box-shadow）
+active focus disabled enabled inset offset-x offset-y blur-radius color
+box-shadow仅仅支持iOS
+
+8、其他基本样式
+opacity:取值范围0-1
+background-color:设置元素的背景色，支持RGB RGBA 十六进制 精简写法的十六进制 色值关键字
+
+9、上手样式
+全局样式规则
+flex布局
+定位盒子
+细节样式处理
+
+【6】、文本样式
+文本类组件共享一些通用样式，这类组件目前包括text和input
+color--文字颜色
+lines--指定文本行数，仅在<text>组件中支持，默认为0代表不限制行数
+font-size
+font-style--normal italic
+font-weight--normal bold 100 200 300 400 500 600 700 800 900
+text-decoration--none underline line-through
+text-align--left center right
+font-family
+text-overflow--clip ellipsis
+
+【7】、手势
+该功能属于实验性功能
+Weex封装了原生的触摸事件以提供手势系统，使用手势类似于在Weex中使用事件，只需在节点上设置on特性来监听手势即可
+Touch--当触摸到一个点，移动或从触摸面移开时触发touch手势，触摸手势很精准，它会返回所有详细的事件信息，所以监听touch手势可能很慢，即使只移动一丁点也需要处理大量事件
+touchstart touchmove touchend
+Pan--返回触摸点在触摸面的移动信息，只会采样收集部分事件信息因此比touch事件要快得多，但精准度差于touch
+panstart panmove panend
+Swipe--在用户在屏幕上滑动时触发，一次连续的滑动只会触发一次swiper手势
+LongPress--在触摸点连续保持500ms以上时触发
+
+属性：
+direction--仅在swipe手势中存在，返回滑动方向，返回值可能为up left bottom right
+changedTouches--一个数组，包含了当前手势的触摸点的运动轨迹
+
+changedTouches子元素的属性：
+identifier
+pageX--触摸点相对于文档左侧边缘的X轴坐标
+pageY
+screenX--触摸点相对于屏幕左侧边缘的X轴坐标
+screenY
+
+目前，由于会触发大量事件冲突，Weex Android还不支持在滚动类型的元素上监听手势：例如scroller list webview
+
+【8】、Path
+
+本地资源--
+Weex SDK提供local scheme来访问打包在应用程序中的资源，此scheme无法再h5环境下使用，目前，开发者可以在image组件和字体文件中使用本地资源
+在iOS中，Weex会在bundle resources中查找，例如，image组件的src属性为local:///app_icon，Weex会加载bundle resource中名为app_icon的图像资源
+在Android中，image组件将从drawable资源文件夹加载，如res/drawable-xxx，但加载字体文件是不同的，Android框架无法从res加载字体文件，因此SDK将从asserts文件夹加载它
+
+HTTP/HTTPS
+它的工作方式有web相同
+
+FILE
+使用file scheme访问本地磁盘文件，这个方案有其局限性，你不应该在源页面中硬编码文件url，因为不管它是否在不同的平台上运行，内容将在另一个设备上完全不同，这取决于具体的设备
+在运行时动态获取文件url，可以使用它来显示本地磁盘的图像，或者稍后上传它
+
+相对路径
+
+【8】、<a>
+
+<a>组件定义了指向某个页面的一个超链接，此组件的作用和用法与HTML5中的<a>非常类似，区别在于Weex的<a>组件不能直接在里面添加文字，如果要展示文字，应该添加<text>组件
+
+此组件支持除了自己外的所有Weex组件作为子组件
+支持所有通用样式
+支持所有通用事件
+不能直接在<a>中添加文本
+不要为<a>添加click事件，我们不能确保click事件和href跳转的执行顺序
+
+<template>
+    <div class="wrapper">
+        <a class="button" href="http://dotwe.org/raw/dist/kk.js">
+            <text class="text">Jump</text>
+        </a>
+    </div>
+</template>
+
+<style scoped>
+    .wrapper {
+        flex-direction: column;
+        justify-content: center;
+    }
+    .button {
+        width: 450px;
+        margin-top: 30px;
+        margin-left: 150px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #DDDDDD;
+        background-color: #F5F5F5;
+    }
+    .text {
+        font-size: 60px;
+        color: #666666;
+        text-align: center;
+    }
+</style>
+
+【9】、<slider>
+
+<slider>组件用于在一个页面中展示多个图片，在前端，这种效果被称为 轮播图
+
+支持任意类型的Weex组件作为其子组件
+其中，<indicator>用于显示轮播图指示器效果，必须充当<slider>组件的子组件使用
+
+auto-play--默认false，该值决定是否自动播放轮播，重置loadmore相关的UI
+interval--设定slider切换时间间隔
+infinite--循环播放
+offset-x-accuracy--控制onscroll事件触发的频率，默认值为10，表示两次onscroll事件之间Slider Page至少滚动了10px，将此值设置为较小的值会提高滚动事件采样的精度，同时也会降低页面的性能
+
+支持所有通用样式
+
+支持所有通用事件
+change--当轮播索引改变时，触发该事件，event对象属性：
+index 展示的图片索引
+scroll 列表发生滚动时将会触发此事件，默认抽样率为10px
+offsetXRatio 表示当前页面的偏移比例，取值范围[-1, 1]，负值表示向左侧滚动，正值向右
+
+<template>
+    <div>
+        <slider class="slider" interval="3000" auto-play="true">
+            <div class="frame" v-for="img in imageList">
+                <image class="image" resize="cover" :src="img.src"></image>
+            </div>
+        </slider>
+    </div>
+</template>
+
+<style scoped>
+    .image {
+        width: 700px;
+        height: 700px;
+    }
+    .slider {
+        margin-top: 25px;
+        margin-left: 25px;
+        width: 700px;
+        height: 700px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #41B883;
+    }
+    .frame {
+        width: 700px;
+        height: 700px;
+        position: relative;
+    }
+</style>
+
+<script>
+    export default {
+        data () {
+            return {
+                imageList: [
+                    {scr: 'ddd.jpg'},
+                    {scr: 'ddd.jpg'},
+                    {scr: 'ddd.jpg'}
+                ]
+            }
+        }
+    }
+</script>
+
+【10】、<indicator>
+
+<indicator>组件用于显示轮播图指示器效果，必须充当<slider>组件的子组件使用
+
+<indicator>组件没有任何子组件
+<indicator>组件有一些私有样式
+item-color 设置项的颜色
+item-selected-color 被选中时的颜色
+item-size 元素的个数
+
+支持通用样式
+
+<indicator>的position不仅依赖top left bottom right，同时也参考width和height样式，<indicator>默认的宽高继承于<slider>，如果<slider>未设置宽高，需要显示的给<indicator>设置宽高值
+
+支持所有通用事件
+
+不支持子组件
+
+<template>
+    <div>
+        <slider class="slider" interval="4500" @change="onchange">
+            <div class="frame" v-for="img in imageList">
+                <image class="image" resize="cover" :src="img.src"></image>
+                <text class="title">{{img.title}}</text>
+            </div>
+            <indicator class="indicator"></indicator>
+        </slider>
+    </div>
+</template>
+
+<style scoped>
+    .image {
+        width: 700px;
+        height: 700px;
+    }
+    .slider {
+        margin-top: 25px;
+        margin-left: 25px;
+        width: 700px;
+        height: 700px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #41B883;
+    }
+    .title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding-left: 20px;
+        width: 200px;
+        color: #FFFFFF;
+        font-size: 36px;
+        line-height: 60px;
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    .frame {
+        width: 700px;
+        height: 700px;
+        position: relative;
+    }
+    .indicator {
+        width: 700px;
+        height: 700px;
+        item-color: green;
+        item-selected-color: red;
+        item-size: 50px;
+        position: absolute;
+        top: 200px;
+        left: 200px;
+    }
+</style>
+
+<script>
+    export default {
+        data () {
+            return {
+                imageList: [
+                    {title:'item A', scr: 'ddd.jpg'},
+                    {title:'item B', scr: 'ddd.jpg'},
+                    {title:'item C', scr: 'ddd.jpg'}
+                ]
+            }
+        },
+        methods: {
+            onchange (event) {
+                console.log('changed:', event.index)
+            }
+        }
+    }
+</script>
+
+【11】、<switch>
+
+<switch>是Weex的内置组件，用来创建和iOS一致样式的按钮
+不支持任何子组件
+checked 默认值为false，表明按钮是否开启is or not
+disabled 默认false，表明是否激活按钮
+
+在这个组件上，有些样式不能使用--width height min-width min-height margin padding border
+
+如果<switch>的容器没有设置align-items: flex-start，则Android中的开关将被拉伸
+
+支持通用样式flexbox position opacity background-color
+
+支持所有通用事件
+change 改变开关状态时触发该事件
+event对象属性
+--value 组件布尔值 真 或 假
+--timestamp 事件的时间戳
+
+<template>
+    <div>
+        <div class="example">
+            <text class="label">normal</text>
+            <switch></switch>
+        </div>
+        <div class="example">
+            <text class="label">checked</text>
+            <switch checked="true"></switch>
+        </div>
+        <div class="example">
+            <text class="label">disabled</text>
+            <switch disabled="true" checked="true"></switch>
+            <switch disabled="true"></switch>
+        </div>
+        <div class="example">
+            <text class="label">onchange</text>
+            <switch @change="onchange"></switch>
+            <text class="info">{{checked}}</text>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        data () {
+            return {
+                checked: false
+            }
+        },
+        methods: {
+            onchange (event) {
+                console.log(`onchange, value: ${event.value}`);
+                this.checked = event.value
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .example {
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-top: 60px;
+    }
+    .label {
+        font-size: 40px;
+        line-height: 60px;
+        width: 350px;
+        color: #666;
+        text-align: right;
+        margin-right: 20px;
+    }
+    .info {
+        font-size: 30px;
+        line-height: 60px;
+        color: #BBB;
+        margin-left: 10px;
+    }
+</style>
+
+【12】、<text>
+
+<text>是Weex内置的组件，用来将文本按照指定的样式渲染出来。<text>只能包含文本值，可以使用{{}}标记插入变量值作为文本内容
+
+此组件不支持子组件
+
+value 组件的值，与<text>标签中的文本内容相同
+
+样式
+lines 指定文本行数，默认0，代表不限制行数
+color
+font-size
+font-style
+font-weight
+text-align
+text-decoration
+text-overflow
+line-height
+不支持flex-direction justify-content align-items，<text>没有子节点
+
+支持所有通用样式
+
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+<text>里直接写文本头尾空格会被过滤，如果需要保留头尾空白，暂时只能通过数据绑定写头尾空格
+
+支持ttf和woff字体格式的自定义字体，可以通过调用dom module里面的addRule方法，构建自定义的 font-family使用， addRule建议在beforeCreate或者更早时调用
+
+<template>
+    <div style="flex-direction:row;margin-top:50px;">
+        <text style="font-family:iconfont4;font-size:50;color:green;">&#xe614;&#xe612;&#xe613;</text>
+        <text style="font-family:iconfont4;font-size:50;">&#xe614;&#xe612;&#xe613;</text>
+        <text style="font-family:iconfont4;font-size:50;color:blue;">&#xe614;&#xe612;&#xe613;</text>
+        <text style="font-family:iconfont4;font-size:50;color:green;">&#xe614;&#xe612;&#xe613;</text>
+    </div>
+</template>
+<script>
+    module.exports = {
+        beforeCreate: function () {
+            var domModule = weex.requireModule("dom");
+            domModule.addRule("fontFace", {
+                "fontFamily": "iconfont4",
+                "src": "url('http://at.alicdn.com/t/font_1469606.ttf')"
+            })
+        }
+    }
+</script>
+
+<template>
+    <div class="wrapper">
+        <div class="panel">
+            <text class="text" lines="3">Weex 是一套简单易用的跨平台开发方案，能以 Web 的开发体验构建高性能、可扩展的原生应用。Vue 是一个轻量并且功能强大的渐进式前端框架。</text>
+        </div>
+        <div class="panel">
+            <text class="text" lines="3">Weex is an cross-platform development solution that builds high-performance, scalable native applications with a Web development experience. Vue is a lightweight and powerful progressive front-end framework. </text>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+    .wrapper {
+        flex-direction: column;
+        justify-content: center;
+    }
+    .panel {
+        width: 600px;
+        margin-left: 75px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #BBB;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 30px;
+    }
+    .text {
+        lines: 3;
+        color: #666666;
+        font-size: 32px;
+    }
+</style>
+
+【12】、<textarea>
+
+<textarea>时Weex内置的一个组件，用于用户交互，接受用户输入数据，可以认为是允许多行的<input>
+<textarea>支持<input>支持的所有事件
+
+此组件不支持子组件
+
+value--组件的接收到的输入字符
+placeholder--提示用户可以输入什么，提示文本不能有会车或者换行
+disabled--表示是否支持输入，通常click事件在disabled控件上是失效的
+autofocus--表示是否在页面加载时控件自动获得输入焦点
+rows--接收number类型的数据，指定组件的高度，默认值为2
+
+样式：
+支持伪类--active，focus，disabled，enabled
+支持文本样式--color，font-size，font-style，font-weight，text-align
+支持所有通用样式--盒模型，flexbox布局，position，opacity，background-color
+
+支持事件：
+input--输入字符的更改--value,timestamp
+change--用户输入完成时触发，通常在blur事件之后--value，timestamp
+focus--组件获得输入焦点--timestamp
+blur--组件失去输入焦点--timestamp
+
+通用事件--不支持click，请监听input或者change代替
+支持一下通用事件
+longpress
+appear
+disappear
+
+<template>
+    <div class="wrapper">
+        <textarea class="textarea" @input="oninput" @change="onchange" @focus="onfocus" @blur="onblur"></textarea>
+    </div>
+</template>
+
+<script>
+    const modal = weex.requireModule("modal")
+
+    export default {
+        methods: {
+            oninput (event) {
+                console.log("oninput:", event.value)
+                modal.toast({
+                    message: `oninput: ${event.value}`,
+                    duration: 0.8
+                })
+            },
+            onchange (event) {
+                console.log("onchange:", event.value)
+                modal.toast({
+                    message: `onchange: ${event.value}`,
+                    duration: 0.8
+                })
+            },
+            onfocus (event) {
+                console.log("onfocus:", event.value)
+                modal.toast({
+                    message: `onfocus: ${event.value}`,
+                    duration: 0.8
+                })
+            },
+            onblur (event) {
+                console.log("onblur:", event.value)
+                modal.toast({
+                    message: `onblur: ${event.value}`,
+                    duration: 0.8
+                })
+            }
+
+        }
+    }
+</script>
+
+<style>
+    .textarea {
+        font-size: 50px;
+        width: 650px;
+        margin-top: 50px;
+        margin-left: 50px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        color: #666666;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #41B883;
+    }
+</style>
+
+【13】、<video>
+
+<video>组件可以让我们在Weex页面中嵌入视频内容
+<text>是唯一合法的子组件
+
+src--内嵌的视频指向的URL
+play-status--play|pause，用来控制视频的播放状态，默认为pause
+auto-play--true|false，当页面加载初始化完成后，用来控制视频是否立即播放，默认false
+
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件：
+start
+pause
+finish
+fail
+
+<template>
+    <div>
+        <video class="video" :src="src" autoplay controls
+        @start="onstart" @pause="onpause" @finish="onfinish" @fail="onfail"></video>
+        <text class="info">state: {{state}}</text>
+    </div>
+</template>
+
+<style scoped>
+    .video {
+        width: 630px;
+        height: 350px;
+        margin-top: 60px;
+        margin-left: 60px;
+    }
+    .info {
+        margin-top: 40px;
+        font-size: 40px;
+        text-align: center;
+    }
+</style>
+
+<script>
+    export default {
+        data () {
+            return {
+                state: '----',
+                src: 'http://flv2.bn.netease.com/fkkd.mp4'
+            }
+        },
+        methods: {
+            onstart (event) {
+                this.state = 'onstart'
+            },
+            onpause (event) {
+                this.state = 'onpause'
+            },
+            onfinish (event) {
+                this.state = 'onfinish'
+            },
+            onfail (event) {
+                this.state = 'onfail'
+            }
+        }
+    }
+</script>
+
+【14】、<web>
+
+使用<web>组件在Weex页面中嵌入一张网页内容，src地址用来指定资源地址，可以使用webview module来控制web的行为，比如前进、后退和重载
+
+不支持子组件
+
+src特性指定嵌入的web页面的url
+
+通用样式：不支持部分盒模型样式，支持以下
+width
+height
+flexbox布局
+position
+opacity
+background-color
+
+事件：
+pagestart
+pagefinish
+error
+appear
+disappear
+不支持click事件
+
+<template>
+    <div class="wrapper">
+        <div class="group">
+            <input class="input" v-model="value" ref="onput" type="url" autofocus="false"></input>
+        </div>
+        <div class="group">
+            <text class="button" @click="loadURL">LoadURL</text>
+            <text class="button" @click="reload">reload</text>
+        </div>
+        <web ref="webview" :src="url" class="webview" @pagestart="start" @pagefinish="finish" @error="error"></web>
+    </div>
+</template>
+
+<script>
+    const webview = weex.requireModule("webview")
+    const modal = weex.requireModule("modal")
+    export default {
+        data () {
+            return {
+                url: 'https://m.alibaba.com',
+                value: 'https://m.alibaba.com'
+            }
+        },
+        methods: {
+            loadURL (event) {
+                this.url = this.value;
+                modal.toast({
+                    message: 'load url:' + this.url
+                })
+                setTimeout(() => {
+                    console.log('will go back')
+                    modal.toast({
+                        message: 'will go back'
+                    })
+                    webview.goBack(this.$refs.webview)
+                }, 10000)
+            },
+            reload (event) {
+                console.log('will reload webview')
+                modal.toast({
+                    message: 'reload'
+                })
+                webview.reload(this.$refs.webview)
+            },
+            start (event) {
+                console.log('pagestart', event)
+                modal.toast({
+                    message: 'pagestart'
+                })
+            },
+            finish (event) {
+                console.log('pagefinish', event)
+                modal.toast({
+                    message: 'pagefinish'
+                })
+            },
+            error (event) {
+                console.log('error', event)
+                modal.toast({
+                    message: 'error'
+                })
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .group {
+        flex-direction: row;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .input {
+        width: 600px;
+        font-size: 36px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #BBBBBB;
+    }
+    .button {
+        width: 225px;
+        text-align: center;
+        background-color: #D3D3D3;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        font-size: 30px;
+    }
+    .webview {
+        margin-left: 75px;
+        width: 600px;
+        height: 750px;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #41B883;
+    }
+</scope>
+
+【14】、<div>
+
+<div>组件时用来包装其他组件的最基本容器，支持所有的通用样式、特性、flexbox布局，其类似于HTML中的<div>容器，但不能直接在里面添加文本，如果要展示文本，应该使用<text>组件
+<div>嵌套层级不可过深，否则容易引起性能问题，建议控制在10层以内
+
+<template>
+    <div>
+        <text class="text">Hello World!</text>
+    </div>
+</template>
+
+<style>
+    .text {
+        font-size: 70px;
+        color: #ff0000;
+    }
+</style>
+
+<script></script>
+
+<div>是基本容器组件，因此支持包括div在内的任何组件作为自己的子组件，因此，在写一个组件时，推荐外层使用<div>作为根容器
+
+div支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+不能直接在div中添加文字
+div在native中不可滚动，即使显示设置高度也一样
+
+<template>
+    <div>
+        <div class="box">
+        </div>
+    </div>
+</template>
+
+<style scoped>
+    .box {
+        border-width: 2px;
+        border-style: solid;
+        border-color: #BBB;
+        width: 250px;
+        height: 250px;
+        margin-top: 250px;
+        margin-left: 250px;
+        background-color: #EEE;
+    }
+</style>
+
+【15】、<image>
+
+<image>组件用来渲染图片，并且它不能包含任何子组件
+需要明确指定width和height，否则图片无法显示
+
+<template>
+    <div>
+        <image style="width: 560px;height: 560px;" src="https://ddfdf.jpg"></image>
+    </div>
+</template>
+
+<image>组件不支持任何子组件，因此不要尝试在<image>组件中添加任何子组件，如果需要实现background-image的效果，可以使用<image>组件和position定位来实现
+
+<template>
+    <div>
+        <image style="width: 750px; height: 750px;" src="https://jdjdkdkd.jpg"></image>
+        <div class="title">
+            <text style="font-size: 50px; color: #ff0000">你好，image</text>
+        </div>
+    </div>
+</template>
+
+<style>
+    .title {
+        position: absolute;
+        top: 50;
+        left: 10;
+    }
+</style>
+
+特性：
+src--定义图片链接，不支持本地图片
+resize--可以控制图片的拉伸状态
+--stretch 拉伸
+--cover
+--contain
+
+placeholder--当前图片下载中时显示一张占位图
+
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件
+load--当图片加载完成时触发，目前在Android、iOS上支持，H5暂不支持
+success-成功加载时为true
+size--图片的原始尺寸，包含两个参数，naturalWidth代表图片的原始宽度像素值，naturalHeight代表图片的原始高度值
+
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+组件方法：
+save--保存当前图片到本地
+
+var image = this.$refs.imageRef;
+image.save(function(result){
+    console.log(JSON.stringify(result))
+})
+
+异步返回的数据描述
+{
+    "success": true/false,
+    "errorDesc": errorDesc
+}
+
+对IOS系统需要添加NSPhotoLibraryAddUsageDescription相册访问权限，iOS11需要再添加一个NSPhotoLibraryAddUsageDescription权限
+
+约束：
+需要制定宽高
+不支持子组件
+
+<template>
+    <sroller class="wrapper">
+        <div class="page-head">
+            <image class="title-bg" resize="cover" src="https://dffg.jpg"></image>
+            <div class="title-box">
+                <text class="title"></text>
+            </div>
+        </div>
+        <div class="article">
+            <text class="paragraph">Alan Mathison Turing ( 23 June 1912 – 7 June 1954) was </text>
+            <text class="paragraph">an English computer scientist, mathematician, logician, cryptanalyst </text>
+            <text class="paragraph">and theoretical biologist. He was highly influential in the development </text>
+            <text class="paragraph">of theoretical computer science, providing a formalisation of the </text>
+        </div>
+    </scroller>
+</template>
+
+<style>
+    .page-head {
+        width: 750px;
+        height: 200px;
+    }
+    .title-bg {
+        width: 750px;
+        height: 200px;
+    }
+    .title-box {
+        width: 750px;
+        height: 200px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    .title {
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: bold;
+    }
+    .article {
+        padding: 20px;
+    }
+    .paragraph {
+        margin-bottom: 15px;
+    }
+</style>
+
+【15】、<waterfall>
+
+子组件
+和list一样，waterfall只支持特定类型的组件，cell、header、refresh、loading和fixed-position组件
+cell: 瀑布流中的每个元素
+header: 主要用于表示横跨多列的元素，可以通过css的position属性设置为sticky
+
+column-width--描述瀑布流每一列的宽度
+--auto，意味着列宽是被其他属性所决定的
+--length，最佳列宽，实际的列宽可能会更宽，或者更窄，该值必须大于0
+
+column-count--描述瀑布流的列数
+--auto，意味着列数是被其他属性所决定的
+--integer，最佳列数，column-width和column-count都指定非0值，则column-count代表最大列数
+
+column-gap--列与列之间的间隙，如果为normal，则对应32
+
+样式
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件
+通用事件
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+滚动到列表某个指定项是常见需求，<waterfall>拓展了该功能支持滚动到指定<cell>或者<header>，通过dom module访问
+
+【16】、<input>
+
+Weex内置的<input>组件用来创建接收用户输入字符的输入组件，<input>组件的工作方式因type属性的值而异，比如text password url email tel等
+
+此组件不支持click事件，请监听input或change来代替click事件
+
+不支持子组件
+
+特性
+type: 控件的类型，默认text，可以为text、password、url、email、tel、number
+value: 组件的接收到的输入字符
+placeholder: 提示用户可以输入什么，提示文本不能有回车或换行
+disabled: 表示是否支持输入，通常click事件在disabled控件上是失效的
+autofocus: 表示是否在页面加载时控件自动获得输入焦点
+maxlength: 一个数值类型的值，表示输入的最大长度
+return-key-type: 键盘返回键的类型，支持default、go、next、search、send、done
+
+样式
+placeholder-color
+伪类--active、focus、disabled、enabled
+text styles--color、font-size、font-style、font-weight、text-align
+通用样式--盒模型、flexbox布局、position、opacity、background-color
+
+事件
+input--value,timestamp
+change--value,timestamp
+focus--timestamp
+blur--timestamp
+return--returnKeyType,value
+
+不支持click事件，请监听input或change事件代替
+
+支持一下通用事件
+--longpress
+--appear
+--disappear
+
+Methods
+focus
+blur
+setSelectionRange(selectionStart, selectionEnd)
+getSelectionRange(callback[selectionStart, selectionEnd])
+
+目前不支持this.$el(id).value = ''这种方式改写input value，只支持在<input>组件的input、change事件中改写
+
+<template>
+    <div>
+        <div>
+            <text style="font-size: 40px;">oninput: {{txtInput}}</text>
+            <text style="font-size: 40px;">onchange: {{txtChange}}</text>
+            <text style="font-size: 40px;">onreturntype: {{txtReturnType}}</text>
+            <text style="font-size: 40px;">selection: {{txtSelection}}</text>
+        </div>
+        <scroller>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = text</text>
+                </div>
+                <input type="text" placeholder="Input Text" class="input" :autofocus=true value="" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = password</text>
+                </div>
+                <input type="password" placeholder="Input Password" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = url</text>
+                </div>
+                <input type="url" placeholder="Input URL" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = email</text>
+                </div>
+                <input type="text" placeholder="Input Email" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = tel</text>
+                </div>
+                <input type="tel" placeholder="Input Tel" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = time</text>
+                </div>
+                <input type="time" placeholder="Input Time" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = number</text>
+                </div>
+                <input type="number" placeholder="Input Number" class="input" @change="onchange" @input="oninput">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input type = date</text>
+                </div>
+                <input type="date" placeholder="Input Date" class="input" @change="onchange" @input="oninput" max="2017-12-12" min="2015-01-01">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = default</text>
+                </div>
+                <input type="text" placeholder="please input" class="input" return-key-type="default" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = go</text>
+                </div>
+                <input type="text" placeholder="please input" class="input" return-key-type="go" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = next</text>
+                </div>
+                <input type="text" placeholder="Input Text" class="input" return-key-type="next" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = search</text>
+                </div>
+                <input type="text" placeholder="Input Text" class="input" return-key-type="search" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = send</text>
+                </div>
+                <input type="text" placeholder="Input Text" class="input" return-key-type="send" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input return-key-type = done</text>
+                </div>
+                <input type="text" placeholder="Input Text" class="input" return-key-type="done" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">function focus() & blur()</text>
+                </div>
+                <div style="flex-direction: row; margin-bottom: 16px; justify-content: space-between;">
+                    <text class="button" value="Focus" type="primary" @click="focus"></text>
+                    <text class="button" value="Blur" type="primary" @click="blur"></text>
+                </div>
+                <input type="text" placeholder="Input1" class="input" value="" ref="input1">
+            </div>
+            <div>
+                <div style="background-color: #286090">
+                    <text class="title" style="height: 80; padding: 20; color: #FFFFFF">input selection</text>
+                </div>
+                <div style="flex-direction: row; margin-bottom: 16px; justify-content: space-between;">
+                    <text class="button" value="setRange" type="primary" @click="setRange"></text>
+                    <text class="button" value="getSelectionRange" type="primary" @click="getSelectionRange"></text>
+                </div>
+                <input type="text" placeholder="please input" ref="inputselection" class="input" value="123456789" @change="onchange" @input="oninput" @return="onreturn">
+            </div>
+        </scroller>
+    </div>
+</template>
+<style scoped>
+    .input {
+        font-size: 60px;
+        height: 80px;
+        width: 750px;
+    }
+    .button {
+        font-size: 36;
+        width: 200;
+        color: #41B883;
+        text-align: center;
+        padding-top: 10;
+        padding-bottom: 10;
+        border-width: 2;
+        border-style: solid;
+        margin-right: 20;
+        border-color: rgb(162, 217, 192);
+        background-color:rgba(162, 217, 192, 0.2);
+    }
+</style>
+<script>
+    module.exports = {
+        data: function () {
+            return {
+                txtInput: '',
+                txtChange: '',
+                txtReturnType: '',
+                txtSelection: '',
+                autofocus: false
+            }
+        },
+        methods: {
+            ready: function () {
+                var self = this;
+                setTimeout(function () {
+                    self.autofocus = true;
+                }, 1000);
+            },
+            onchange: function (event) {
+                this.txtChange = event.value;
+                console.log('onchange', event.value);
+            },
+            onreturn: function (event) {
+                this.txtReturnType = event.returnKeyType;
+                console.log('onreturn', event.value);
+            },
+            oninput: function (event) {
+                this.txtInput = event.value;
+                console.log('oninput', event.value);
+            },
+            focus: function () {
+                this.$refs['input1'].focus();
+            },
+            blur: function () {
+                this.$refs['input1'].blur();
+            },
+            setRange: function () {
+                console.log(this.$refs['inputselection']);
+                this.$refs['inputselection'].setSelectionRange(2, 6);
+            },
+            getSelectionRange: function () {
+                console.log(this.$refs['inputselection']);
+                var self = this;
+                this.$refs['inputselection'].getSelectionRange(function(e) {
+                    self.txtSelection = e.selectionStart + '-' + e.selectionEnd;
+                })
+            }
+        }
+    }
+</script>
+
+【17】、<list>
+
+<list>组件是提供垂直列表功能的核心组件，拥有平滑的滚动和高效的内存管理，非常适合用于长列表的展示，最简单的使用方法是在<list>标签内使用一组由简单数组repeat生成的<cell>标签组成
+
+<list>组件支持更多高级功能，由以下子组件提供
+
+<cell>用于定义列表中的子列表项
+header--到达屏幕顶部时，吸附在屏幕顶部
+refresh--给列表添加下拉刷新的功能
+loading--给列表添加上拉加载的功能
+
+list的组件只能包含以上4中组件或是fix定位的组件，其他形式的组件将不能被正确的渲染
+
+loadmoreoffset, 默认值为0， 触发loadmore事件所需要的垂直偏移距离，当list的滚动条滚动到足够接近list底部时将会触发loadmore这个事件
+offset-accuracy，控制onscroll事件触发的频率，默认10，表示两次onscroll事件之间列表至少滚动了10px，将该值设置为较小的数值会提供滚动事件采样的精度，但同时也会降低页面的性能
+
+样式
+盒模型
+felxbox布局
+position
+opacity
+background-color
+
+事件
+loadmore，如果列表滚动到底部将会立即触发这个事件，可以在这个事件的处理函数中加载下一页的列表
+scroll，列表发生滚动时将会触发该事件，事件的默认抽样率为10px，即列表每滚动10px触发一次，可通过属性offest-accuracy设置抽样率
+
+事件中event对象的属性
+contentSize width height
+contentOffset x y
+
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+扩展
+scrollToElement(node, options)
+滚动到列表某个指定项
+
+resetLoadmore()
+在默认情况下，触发loadmore事件后，如果列表中内容没有发送变更，则下一次滚动到列表末尾时将不会再次触发loadmore事件，可以通过resetLoadmore()方法来打破这一限制，调用此方法后，下一次滚动到列表末尾时将强制触发loadmore
+node--指定目标节点
+options--offset,一个到其可见位置的偏移距离
+
+约束
+不允许相同方向的list或者scroller相互嵌套
+list为根节点无需设置高度，但是内嵌<list>高度必须可计算，可以使用flex或position将list设为一个响应式高度，也可以显示设置list组件的height样式
+
+<template>
+    <list class="list" @loadmore="fetch" loadmoreoffset="10">
+        <cell class="cell" v-for="num in lists">
+            <div class="panel">
+                <text class="text">{{num}}</text>
+            </div>
+        </cell>
+    </list>
+</template>
+
+<script>
+    export default {
+        data () {
+            return {
+                list: [1, 2, 3, 4]
+            }
+        },
+        methods: {
+            fetch (event) {
+                modal.toast({message: 'loadmore', duration: 1})
+                setTimeout(() => {
+                    const length = this.lists.length;
+                    for (let i = length; i < length + LOADMORE_COUNT; ++ i) {
+                        this.lists.push(i + 1);
+                    }
+                }, 800)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .panel {
+        width: 600px;
+        height: 250px;
+        margin-left: 75px;
+        margin-top: 35px;
+        margin-bottom: 35px;
+        flex-direction: column;
+        justify-content: center;
+        border-width: 2px;
+        border-style: solid;
+        border-color: rgb(162, 217, 192);
+        background-color: rgba(162, 217, 192, 0.2);
+    }
+    .text {
+        font-size: 50px;
+        text-align: center;
+        color: #41B883;
+    }
+</style>
+
+【17】、<cell>
+
+用于定义列表中的子列表项，该组件必须为<list>组件的子组件，这是为了优化滚动时的性能
+
+keep-scroll-position List插入数据后是否保持上次滚动的位置
+
+由于cell本身是一个容器，其布局由list进行管理，不能给cell设定flex，cell的宽度等于父组件list的宽度，并且cell高度自适应，指定margin样式也不起作用
+
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件
+支持所有通用事件
+click
+longpress
+appear
+disappear
+
+<template>
+    <list class="list" @loadmore="fetch" loadmoreoffset="10">
+        <cell class="cell" v-for="num in lists">
+            <div class="panel">
+                <text class="text">{{num}}</text>
+            </div>
+        </cell>
+    </list>
+</template>
+
+<script>
+    const modal = weex.requireModule('modal')
+    const LOADMORE_COUNT = 4
+
+    export default {
+        data () {
+            return {
+                lists: [1, 2, 3, 4, 5]
+            }
+        },
+        methods: {
+            fetch (event) {
+                modal.toast({
+                    message: 'loadmore',
+                    duration: 1
+                })
+                setTimeout(() => {
+                    const length =  this.lists.length
+                    for (let i = length; i < length + LOADMORE_COUNT; ++ i) {
+                        this.lists.push(i + 1)
+                    }
+                }, 800)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .panel {
+        width: 600px;
+        height: 250px;
+        margin-left: 75px;
+        margin-top: 35px;
+        margin-bottom: 35px;
+        flex-direction: column;
+        justify-content: center;
+        border-width: 2px;
+        border-style: solid;
+        border-color: rgb(162, 217, 192)
+        background-color: rgba(162, 217, 192, 0.2)
+    }
+    .text {
+        font-size: 50px;
+        text-align: center;
+        color: #41B883;
+    }
+</style>
+
+【18】、<loading>
+
+<loading>为<scroller>和<list>提供上拉加载功能，用法和特性与<refresh>类似，是<scroller>和<list>的子组件，且只能在被<scroller>和<list>包含时才能被正确的渲染
+
+子组件
+<text>
+<image>
+<loading-indicator>: <refresh>和<loading>组件的子组件，拥有默认的动画效果的实现
+
+特性
+display: 可选值为show 或者 hide，仅隐藏<indicator>，<loading>其他子组件仍然可见，loading事件仍会被触发
+
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件
+loading: 加载时被触发
+
+约束
+<loading>不支持remove
+display值为show或hide，仅隐藏<indicator>，<loading>其他子组件仍然可见，loading事件仍会被触发
+如果需要loading hide时隐藏文案并不再触发事件，有两种解决方法
+--修改提示文案，并在loading事件中添加判断逻辑
+--v0.9+可通过remove解决
+只能通过display特性进行展示和隐藏，且必须成对出现，即设置display="show",必须有对应的display="hide"
+
+<template>
+    <scroller class="scroller">
+        <div class="cell" v-for="num in lists">
+            <div class="panel">
+                <text class="text">{{num}}</text>
+            </div>
+        </div>
+        <loading class="loading" @loading="onloading" :display="showLoading">
+            <text class="indicator">Loading</text>
+        </loading>
+    </scroller>
+</template>
+<script>
+    const modal = weex.requireModule('modal')
+    const LOADMORE_COUNT = 4
+
+    export default {
+        data () {
+            return {
+                showLoading: 'hide',
+                lists: [1, 2, 3, 4, 5]
+            }
+        },
+        methods: {
+            onLoading (event) {
+                modal.toast({
+                    message: 'loading',
+                    duration: 1
+                })
+                this.showLoading = 'show'
+                setTimeout(() => {
+                    const length = this.lists.length
+                    for (let i = length; i < length + LOADMORE_COUNT; i ++) {
+                        this.lists.push(i + 1)
+                    }
+                    this.showLoading = 'hide'
+                }, 1500)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .panel {
+        width: 600px;
+        height: 250px;
+        margin-left: 75px;
+        margin-top: 35px;
+        margin-bottom: 35px;
+        flex-direction: column;
+        justify-content: center;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #DDDDDD;
+        background-color: #F5F5F5;
+    }
+    .text {
+        font-size: 50px;
+        text-align: center;
+        color: #41B883;
+    }
+    .loading {
+        justify-content: center;
+    }
+    .indicator {
+        color: #888888;
+        font-size: 42px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        text-align: center;
+    }
+</style>
+
+【19】、<refresh>
+
+<refresh>为<scroller>和<list>提供下拉加载功能，用法和特性与<loading>类似，<scroller>和<list>的子组件，且只能在被<scroller>和<list>包含时才能被正确渲染
+
+子组件
+<text>
+<image>
+<loading-indicator>: <refresh>和<loading>组件的子组件，拥有默认的动画效果的实现
+
+特性
+display: 可选值为show或者hide， 仅隐藏<indicator> <refresh>其他组件依然可见，refresh事件仍会被触发
+
+样式
+支持所有通用样式
+盒模型
+flexbox布局
+position
+opacity
+background-color
+
+事件
+refresh--当<scroller>/<list>被下拉时触发
+pullingdown--当<scroller>/<list>被下拉时触发，可以从事件的参数对象中获取
+dy 前后两次回调滑动距离的差值
+pullingDistance 下拉的距离
+viewHeight refreshView高度
+type pullingdown 常数字符串
+
+约束
+refresh 不支持 remove
+display值为show或hide，仅隐藏<indicator> <refresh> 其他子组件依然可见，refresh事件仍会被触发
+
+<template>
+    <scroller class="scroller">
+        <refresh class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown" :display="refresh ? 'show' : 'hide'">
+            <text class="indicator">Refreshing...</text>
+        </refresh>
+        <div class="cell" v-for="num in lists">
+            <div class="panel">
+                <text class="text">{{num}}</text>
+            </div>
+        </div>
+    </scroller>
+</template>
+
+<script>
+    const modal = weex.requireModule('modal')
+
+    export default {
+        data () {
+            return {
+                refreshing: false,
+                lists: [1, 2, 3, 4, 5]
+            }
+        },
+        methods: {
+            onrefresh (event) {
+                console.log('is refreshing')
+                modal.toast({
+                    message: 'refresh',
+                    duration: 1
+                })
+                this.refreshing = true
+                setTimeout(() => {
+                    this.refreshing = false
+                }, 2000)
+            },
+            onpullingdown (event) {
+                console.log('is onpulling down')
+                modal.toast({
+                    message: 'pulling down',
+                    duration: 1
+                })
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .indicator {
+        color: #888888;
+        font-size: 42px;
+        text-align: center;
+    }
+    .panel {
+        width: 600px;
+        height: 250px;
+        margin-left: 75px;
+        margin-top: 35px;
+        margin-bottom: 35px;
+        flex-direction: column;
+        justify-content: center;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #DDDDDD;
+        background-color: #F5F5F5;
+    }
+    .text {
+        font-size: 50px;
+        text-align: center;
+        color: #41B883;
+    }
+</style>
+
+【20】、<scroller>
+
+<scroller>是一个竖直的，可以容纳多个排成一列的子组件的滚动器，如果子组件的总高度高于其本身，那么所有的子组件都可滚动
+<scroller>可以当做根元素或者嵌套元素使用，此组件的滚动方向是垂直方向的形式
+
+支持任意类型的Weex组件作为其子组件，还支持refresh和loading
+
+show-scrollbar--true false
+scroll-direction--horizontal vertical
+scroll-direction felx-direction 两个方向必须一致
+loadmoreoffset--默认为0，触发loadmore事件所需要的垂直偏移距离
+offset-accuracy
+
+支持所有通用样式
+
+事件
+--loadmore
+--scroll
+
+支持所有通用事件
+
+扩展方法
+scrollToElement(node, options)
+
+resetLoadmore()
+
+不允许相同方向的list 或者 scroller相互嵌套
+
+<template>
+    <div class="wrapper">
+        <scroller class="scroller">
+            <div class="row" v-for="(name, index) in rows" :ref="'item' + index">
+                <text class="text" :ref="'text' + index"></text>
+            </div>
+        </scroller>
+        <div class="group">
+            <text @click="goto10" class="button">Go to 10</text>
+            <text @click="goto20" class="button">Go to 20</text>
+        </div>
+    </div>
+</template>
+<script>
+    const dom = weex.requireModule('dom|')
+
+    export default {
+        data () {
+            return {
+                rows: []
+            }
+        },
+        created () {
+            for (let i = 0; i < 30; i ++) {
+                this.rows.push('row' + i)
+            }
+        },
+        methods: {
+            goto10 (count) {
+                const el = this.$refs.item10[0]
+                dom.scrollToElement(el, {})
+            },
+            goto20 (count) {
+                const el = this.$refs.item20[0]
+                dom.scrollToElement(el, {})
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .scroller {
+        width: 700px;
+        height: 700px;
+        border-width: 3px;
+        border-style: solid;
+        border-color: rgb(162, 217, 192);
+        margin-left: 25px;
+    }
+    .row {
+        height: 100px;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 30px;
+        border-bottom-width: 2px;
+        border-bottom-style: solid;
+        border-bottom-color: #DDDDDD;
+    }
+    .text {
+        font-size: 45px;
+        color: #666666;
+    }
+    .group {
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 60px;
+    }
+    .button {
+        width: 200px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-size: 40px;
+        margin-left: 30px;
+        margin-right: 30px;
+        text-align: center;
+        color: #41B883;
+        border-width: 2px;
+        border-style: solid;
+        border-color: rgb(162, 217, 192);
+        background-color: rgba(162, 217, 192, 0.2);
+    }
+</style>
+
+【21】、animation
+
+流程且有意义的动画是一个十分有效的提升移动用户体验的手段，animation模块被用于在组件上执行动画，动画可以对组件执行一系列简单的变换（位置，大小，旋转角度，背景颜色和不透明度），例如对一个<image>组件进行移动、旋转、拉伸和收缩等动作
+
+transition(el, options, callback)
+el--将要执行动画的元素，如 this.$refs.test
+options--描述动画过程的对象
+duration
+delay
+needLayout
+timingFunction--linear ease-in ease-out ease-in-out cubic-bezier
+styles--width height backgroundColor opacity  transformOrigin transform
+
+transform
+translate/translateX/translateY
+rotate
+scale/scaleX/scaleY
+rotate/ratateX/rotateY
+perspective
+
+<template>
+    <div class="wrapper">
+        <div ref="test" @click="move" class="box"></div>
+    </div>
+</template>
+
+<script>
+    const animation = weex.requireModule('animation')
+    const modal = weex.requireModule('modal')
+
+    export default {
+        methods: {
+            move () {
+                var testEl = this.$refs.test;
+                animation.transition(testEl, {
+                    styles: {
+                        color: '#FF0000',
+                        transform: 'translate(250px, 100px)',
+                        transformOrigin: 'center center'
+                    },
+                    duration: 800,
+                    timingFunction: 'ease',
+                    needLayout: false,
+                    delay: 0
+                }, function () {
+                    modal.toast({
+                        message: 'animation finished.'
+                    })
+                })
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .box {
+        width: 250px;
+        height: 250px;
+        background-color: #DDD;
+    }
+</style>
+
+【22】、WebSocket
+
+WebSocket是一种先进的技术，这使得在用户的H5/iOS/Android和一个服务器之间打开一个交互式通信会话成为可能，有了这个API，你可以向服务器发送消息，并接收事件驱动的响应，无需轮询服务器的响应
+
+iOS和h5提供WebSockets的protocol，安卓使用需要提供自定义adapter实现
+
+WebSocket(url, protocol)
+
+send(data)
+
+close(code, reason)
+
+onopen(options)
+
+onmessage(options)
+
+onclose(options)
+
+onerror(options)
+
+<template>
+    <scroller>
+        <div>
+            <div style="background-color: #286090;">
+                <text class="title" style="height: 80px; padding: 20px; color: white;">websocket</text>
+            </div>
+            <input type="text" placeholder="please input message to send" class="input" autofocus="false" value="">
+        </div>
+    </scroller>
+</template>
+
+【23】、picker
+
+pick(options, callback)
+index items callback result data
+
+pickDate(options, callback)
+value max min result data
+
+pickTime(options, callback)
+value callback result data
+
+const picker = weex.requireModule('picker')
+
+export default {
+    data () {
+        return {
+            value: ''
+        }
+    },
+    methods: {
+        pickTime () {
+            picker.pickTime({
+                value: this.value
+            }, event => {
+                if (event.result === 'success') {
+                    this.value = event.data
+                }
+            })
+        }
+    }
+}
+
+.wrapper {
+    flex-direction: column;
+    justify-content: center;
+}
+.group {
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 40px;
+    align-items: center;
+}
+.label {
+    font-size: 40px;
+    color: #888888;
+}
+.title {
+    font-size: 80px;
+    color: #41B883;
+}
+.button {
+    font-size: 36px;
+    width: 280px;
+    color: #41B883;
+    text-align: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(162, 217, 192);
+    background-color: rgba(162, 217, 192, 0.2);
+}
+
+【24】、meta
+
+meta模块可用于声明单个页面的元信息，通常是一些页面的配置，如容器的显示宽度(viewport)等
+
+setViewport(options)
+
+只有在页面渲染开始之前设置viewport才会生效，也就是说，setViewport方法只能在入口文件中使用，而且要在new Vue()之前调用，如果是在组件中使用，就只有在渲染到该组件的时候才会执行相应的代码，此时页面已经处于渲染过程中，设置viewport将不会再生效
+
+【25】、clipboard
+
+我们可以通过clipboard模块的getString() setString()接口从系统的粘贴版获取内容和设置内容
+
+仅支持文本拷贝
+只支持Android和iOS
+
+getString(callback)
+setString(text)
+
+const clipboard = weex.requireModule('clipboard')
+
+export default {
+    data () {
+        return {
+            tobecopied: 'yay!',
+            message: 'nothing'
+        }
+    },
+    methods: {
+        setContent () {
+            clipboard.setString(this.tobecopied)
+        },
+        onItemClick () {
+            this.message = 'clicked!'
+            clipboard.getString(ret => {
+                this.message = 'text from clipboard:' + ret.data
+            })
+        }
+    }
+}
+
+【26】、dom
+
+日常开发中，唯一可在.vue文件中使用的是 scrollToElement
+
+getComponentRect(ref, callback)
+--
+result
+size-bottom height left right top width
+
+const dom = weex.requireModule('dom')
+
+function round (size) {
+    var roundSize = {
+        'width': Math.round(size.width)
+        'height': Math.round(size.height)
+        'top': Math.round(size.top)
+        'bottom': Math.round(size.bottom)
+        'left': Math.round(size.left)
+        'right': Math.round(size.right)
+    }
+    return roundSize
+}
+
+export default {
+    data () {
+        return {
+            size: {
+                width: 0,
+                height: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0
+            },
+            ref: 'viewport',
+            tip: 'get box rect'
+        }
+    },
+    mounted () {
+        const result = dom.getComponentRect(this.ref, option => {
+            console.log('getComponentRect:', option)
+            this.size = round.call(this, option.size)
+        })
+    },
+    methods: {
+        click: function () {
+            if (this.ref = 'viewport') {
+                this.ref = this.$refs.box
+                this.tip = 'get viewport rect'
+            } else {
+                this.ref = 'viewport'
+                this.tip = 'get box rect'
+            }
+
+            const result = dom.getComponentRect(this.ref, option => {
+                console.log('getComponentRect:', option)
+                this.size = round.call(this, option.size);
+            })
+        }
+    }
+}
+
+【27】、modal
+
+toast alert confirm prompt
+
+toast(options)
+--message duration
+
+alert(options, callback)
+--message okTitle callback
+
+confirm(options, callback)
+--message okTitle cancelTitle callback
+
+prompt(options, callback)
+--message okTitle cancelTitle callback(result, data)
+
+【28】、navigator
+
+在浏览器里，我们可以通过前进或者后退按钮来切换页面，iOS/Android的navigator模块就是用来实现类似的效果的，除了前进、后退功能，该模块还允许我们制定在切换页面的时候是否应用动画效果
+
+push(options, callback)
+把一个weex页面URL压入导航堆栈中，可指定在页面跳转时是否需要动画，以及操作完成后需要执行的回调函数
+--url animated
+
+pop(options, callback)
+把一个weex页面URL弹出导航堆栈中，可指定在页面弹出时是否需要动画，以及操作完成后需要执行的回调函数
+
+var navigator = weex.requireModule('navigator')
+var modal = weex.requireModule('modal')
+
+export default {
+    methods: {
+        jump (event) {
+            console.log('will jump')
+            navigator.push({
+                url: 'http://djfjjjdf/dfdf.js',
+                animated: 'true'
+            }, event => {
+                modal.toast({
+                    message: 'callback' + event
+                })
+            })
+        }
+    }
+}
+
+【29】、storage
+
+setItem(key, value, callback)
+getItem(key, callback)
+removeItem(key, callback)
+length(callback)
+getAllKeys(callback)
+
+const storage = weex.requireModule('storage')
+const modal = weex.requireModule('modal')
+
+export default {
+    data () {
+        return {
+            keys: '[]',
+            length: 0,
+            state: '----'
+        }
+    },
+    methods: {
+        setItem () {
+            storage.setItem('name', 'Hanks', event => {
+                this.state = 'set success'
+                console.log('set success')
+            })
+        },
+        getItem () {
+            storage.getItem('name', event => {
+                console.log('get value:', event.data)
+                this.state = 'value: ' + event.data
+            })
+        },
+        removeItem () {
+            storage.removeItem('name', event => {
+                console.log('delete value:', event.data)
+                this.state = 'deleted'
+            })
+        },
+        getAll () {
+            storage.getAllKeys(event => {
+                if (event.result === 'success') {
+                    modal.toast({
+                        message: 'props:' + event.data.join(',')
+                    })
+                }
+            })
+        }
+    }
+}
+
+【30】、stream
+
+stream相关的API，用于实现网络请求
+
+fetch(options, callback, progressCallback)
+
+options--method url headers type body
+callback--status ok statusText data headers
+progressCallback--readyState status length statusText headers
+
+默认Content-Type是'application/x-www-form-urlencoded'
+如果需要post json，你需要将Content-Type设为'application/json'
+
+var stream = weex.requireModule('stream')
+
+export default {
+    data () {
+        return {
+            weexStar: 'unknowm',
+            vueStar: 'unknown'
+        }
+    },
+    methods: {
+        getStarCount (repo, callback) {
+            return stream.fetch({
+                method: 'GET',
+                type: 'json',
+                url: 'https://api.github.com/repos/' + repo
+            }, callback)
+        },
+        created () {
+            this.getStarCount('alibaba/weex', res => {
+                this.weexStar = res.ok ? res.data.stargazers_count : '(network error)'
+            }),
+            this.getStartCount('vuejs/vue', res => {
+                this.vueStar = res.ok ? res.data.stargazers_count : '(network error)'
+            })
+        }
+    }
+}
+
+【30】、webview
+
+一系列的<web>组件操作接口，比如goBack goForward reload。webview module与<web>组件共用
+
+goBack goForward reload
+
+<web ref="webview" :src="url" class="webview" @pagestart="start" @pagefinish="finish" @error="error"></web>
+
+const webview = weex.requireModule('webview')
+const webview = weex.requireModule('modal')
+
+export default {
+    data () {
+        return {
+            url: 'https://m.alibaba.com',
+            value: 'https://m.alibaba.com'
+        }
+    },
+    methods: {
+        loadURL (event) {
+            this.url = this.value
+            modal.toast({
+                message: 'load url:' + this.url
+            })
+            setTimeout(() => {
+                console.log('will go back.')
+                modal.toast({
+                    message: 'will go back'
+                })
+                webview.goBack(this.$refs.webview)
+            }, 10000)
+        },
+        reload (event) {
+            console.log('will reload webview')
+            modal.toast({
+                message: 'reload'
+            })
+            webview.reload(this.$refs.webview)
+        },
+        start (event) {
+            console.log('pagestart', event)
+
+        }
+    }
+}
+
+【31】、globalEvent
+
+globalEvent用于监听持久性事件，比如定位信息，陀螺仪等的变化，全局事件是需要额外APIs处理的次要API，你能通过addEventListener注册事件监听，当你不再需要的时候，也可以通过removeEventListener取消事件监听
+
+这是一个实例级别的事件，而非应用级别
+
+如何让你的模块支持全局事件
+
+var evt = new Event('some-type')
+evt.data = {foo: 'bar'}
+document.dispatchEvent(evt)
+
+addEventListener(String eventName, String callback)
+
+var globalEvent = weex.requireModule('globalEvent')
+globalEvent.addEventListener('geolocation', function (e) {
+    console.log('get geolocation')
+})
+
+removeEventListener(String eventName)
+var globalEvent = weex.requireModule('globalEvent')
+globalEvent.removeEventListener('geolocation')
+
+【32】、CSS单位
+
+1、颜色
+#0f0
+#00ff00
+rgb(255, 0, 0)
+rgba(255, 0, 0, 0.5)
+transparent
+orange
+darkgrey
+
+2、length
+
+在Weex中，只支持px长度单位，并且它将在JavaScript运行时和本机渲染器中解析为数字类型
+
+不支持em rem pt这样的单位
+
+3、number
+
+仅仅一个数字，用于opacity lines等
+
+4、percentage暂不支持
+
+【33】、通用事件
+
+Weex提供了通过事件触发动作的能力，例如用户点击组件时执行JavaScript，下面列出了可被添加到Weex组件上以定义事件动作的属性
+
+click-当组件上发生手势时被触发
+
+<input>和<switch>组件目前不支持click事件，请使用change和input事件来代替
+type: click
+target: 触发点击事件的目标组件
+timestamp: 触发点击事件的时间戳
+
+longpress-如果一个组件被绑定了longpress事件，那么当用户长按这个组件时，该事件会被触发
+
+<input>和<switch>组件目前不支持click事件，请使用change或input事件来代替
+type: longpress
+target: 触发点击事件的目标组件
+timestamp: 触发点击事件的时间戳
+
+Appear-如果一个位于某个可滚动区域内的组件被绑定了或appear事件，那么当这个组件的状态变为屏幕上可见时，该事件将被触发
+
+type: appear
+target: 触发Appear事件的组件对象
+timestamp: 事件被触发时的时间戳
+direction: 触发事件时屏幕的滚动方向，up或down
+
+Disappear
+
+Page事件
+
+Weex通过viewappear和viewdisappear事件提供了简单的页面状态管理能力
+
+viewappear事件会在页面
+
+<template>
+    <div>
+        <div class="box" @click="onclick" @longpress="onlongpress" @appear="onappear" @disappear="ondisappear"></div>
+    </div>
+</template>
+
+<script>
+    const modal = weex.requireModule('modal')
+    export default {
+        methods: {
+            onclick (event) {
+                console.log('onclick:', event)
+                modal.toast({
+                    message: 'onclick',
+                    duration: 0.8
+                })
+            },
+            onclick (event) {
+                console.log('onlongpress:', event)
+                modal.toast({
+                    message: 'onclick',
+                    duration: 0.8
+                })
+            },
+        }
+    }
+</script>
+
+【34】、Native DOM APIs
+
+Document类
+createElement(tagName: string, props: Object)
+integer
+number
+percentage
+
+angle-deg grad rad turn
+time-s ms
+frequency-Hz kHz
+resolution-dpi dpcm dppx
+
+color image position
+
+calc()
+toggle()
+attr()
+
+【35】、JS Service
+
+JS Service和Weex实例在JS runtime中并行运行，Weex实例的生命周期可调用JS Service生命周期
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

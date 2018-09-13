@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>react</title>
+</head>
+<body>
+
+声明式：
+React可以非常轻松地创建用户交互界面，为你应用的每一个状态设计简洁的视图，在数据改变时React也可以高效地更新渲染界面。
+以声明式编写UI，可以让你的代码更加可靠，且方便调试。
+
+组件化：创建好拥有各自状态的组件，再由组件构成更加复杂的界面。
+无需再用模板代码，通过使用JavaScript编写的组件你可以更好的传递数据，将应用状态和DOM拆分开来。
+
+一次学习，随处编写：
+无论你现在正在使用什么技术栈，你都可以随时引入React开发新特性。
+React也可以用作开发原生应用的框架React Native
+
+class HelloMessage extends React.Component {
+    render () {
+        return (
+            <div>
+                Hello {this.props.name}
+            </div>
+        )
+    }
+}
+ReactDOM.render(
+    <HelloMessage name="Taylor"></HelloMessage>,
+    mountNode
+)
+
+当组件的状态改变时，组件会调用render()方法重新渲染
+
+class Timer extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { seconds: 0 };
+    }
+
+    tick() {
+        this.setState(prevState => ({
+            seconds: prevState.seconds + 1
+        }))
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000)
+    }
+
+}
+
+class TodoApp extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { items: [], text: '' };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    render() {
+        return (
+            <div>
+                <h3>TODO</h3>
+                <TodoList items={this.state.items}></TodoList>
+                <form onSubmit={this.handleSubmit}>
+                    <input
+                        onChange={this.handleChange}
+                        value={this.state.text}
+                    />
+                    <button>
+                        Add #{this.state.items.length + 1}
+                    </button>
+                </form>
+            </div>
+        )
+    }
+
+    handleChange(e) {
+        this.setState({ text: e.target.value });
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        if(!this.state.text.length) {
+            return;
+        }
+        const newItem = {
+            text: this.state.text,
+            id: Date.now()
+        };
+        this.setState(prevState => {
+            items: prevState.items.concat(newItem),
+            text: ''
+        })
+    }
+}
+
+class TodoList extends React.Component {
+    render() {
+        return (
+            <ul>
+                {this.props.items.map(item => (
+                    <li key={item.id}>{item.text}</li>
+                ))}
+            </ul>
+        )
+    }
+}
+
+ReactDOM.rander(<TodoApp />, mountNode);
+
+组件可以将UI切分成一些独立的、可复用的部件，这样你只需专注于构建每一个单独的部件
+
+组件名称必须以大写字母开头
+
+组件的返回值只能有一个根元素
+
+props 只读
+
+componentDidMount
+componentWillUnmount
+
+this.setState
+
+状态更新可能是异步的
+
+this.setState((prevState, props) => {
+    counter: prevState.counter + props.increment
+})
+浅合并
+
+自顶向下 单向 数据流
+
+属性初始化语法
+箭头函数
+
+通过bind方式向监听函数传参，在类组件中定义的监听函数，事件对象e要排在所传递参数的后面
+
+条件渲染
+
+if
+&&
+? :
+
+return null
+
+map
+
+keys可以在DOM中的某些元素被增加或删除的时候帮助React识别哪些元素发生了变化
+
+key在他的兄弟元素之间应该唯一
+
+表单
+input textarea select
+
+受控组件
+
+使用受控组件，每个状态的改变都有一个与之相关的处理函数，这样就可以直接修改或验证用户输入
+
+event.target
+target.type
+target.name
+
+状态提升
+
+this.props.onTemperatureChange(e.target.value)
+
+对应任何可变数据理应只有一个单一的“数据源”
+
+哪个组件包有状态数据，也只有它自己能够操作这些数据
+
+组合 继承
+
+一些组件不能提前知道他们的子组件是什么
+
+children
+
+属性和组合为你提供了以清晰和安全的方式自定义组件的样式和行为所需的所有灵活性。请记住，组件可以接收任意元素，包括基本数据类型，React元素或函数
+
+如果要在组件之间复用UI无关的功能，建议将其提取到单独的JavaScript模块中，这样可以在部队组件进行扩展的前提下导入并使用该函数、对象或类
+
+深入JSX
+
+React.createElement(component, props, ...children)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

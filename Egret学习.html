@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Egret</title>
+</head>
+<body>
+
+【1】、Get Started
+
+var bg:egret.Shape = new egret.Shape()
+bg.graphics.beginFill(0x336699);
+bg.graphics.drawRect(0, 0, this.stage.stageWidth, this.stage.stageHeight)
+bg.graphics.endFill()
+
+super.addChild(bg)
+
+data-scale-mode  showAll fixedWidth fixedHeight NO_SCALE
+
+this.stage.scaleMode = egret.StageScaleMode.FIXED_WIDTH
+
+var tx:egret.TextField = new egret.TextField()
+tx.text = "I'm Jack, I will use Egret creat a fantasy mobile game!"
+tx.size = 32
+tx.x = 20
+tx.y = 20
+tx.width = this.stage.stageWidth - 40
+this.addChild(tx)
+
+tx.touchEnabled = true
+tx.addEventListener(egret.TouchEvent.TOUCH_TAP, this.touchHandler, this)
+
+private touchHandler (evt:egret.TouchEvent):void {
+    var tx:egrat.TextField = evt.currentTarget
+    tx.textColor = 0x00ff00
+}
+
+tx.addEventListener(egret.TouchEvent.Touch_TAP, function(evt:egret.TouchEvent):void {
+    tx.textColor = 0x00ff00
+}, this)
+
+资源加载清单
+default.res.json
+
+{
+    "resource": [
+        {
+            "name": "bgImage",
+            "type": "image",
+            "url": "assets/bg.jpg",
+        }
+    ],
+    "groups": [
+        {
+            "name": "preload",
+            "keys": "bgImage, egretIcon"
+        }
+    ]
+}
+
+name
+type--
+image 包括png和jpg，载入后解析为egret.Texture
+text 文本文件，解析为string对象
+json
+url
+
+在程序中加载资源
+
+RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onCinfigComplete, this)
+RES.loadConfig("resource/default.res.json", "resource/")
+
+RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onConfigComplete, this)
+RES.addEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onResourceLoadComplete, this)
+RES.addEventListener(RES.ResourceEvent.GROUP_LOAD_ERROR, this.onResourceLoadError, this)
+RES.addEventListener(RES.ResourceEvent.GROUP_PROGRESS, this.onResourceProgress, this)
+Res.loadGroup("heroes")
+
+var batman:egret.Bitmap = new egret.Bitmap(RES.getRes("hero-01"))
+batman.x = -30
+batman.y = 20
+this.addChild(batman)
+
+var captain:egret.Bitmap = new egret.Bitmap(RES.getRes("hero-02"))
+captain.x = 70
+captain.y = 20
+this.addChild(captain)
+var superman:egret.Bitmap = new egret.Bitmap(RES.getRes("hero-03"))
+superman.x = 170
+superman.y = 20
+this.addChild(superman)
+var hulk:egret.Bitmap = new egret.Bitmap(RES.getRes("hero-04"))
+hulk.x = 270
+hulk.y = 20
+this.addChild(hulk)
+
+显示深度
+console.log("display indexes:", this.getChildIndex(bg), this.getChildIndex(batman), this.getChildIndex(captain), this.getChildIndex(superman), this.getChildIndex(hulk))
+
+this.setChildIndex(batman, this.getChildIndex(captain))
+
+1.某一个显示深度只能对应一个显示对象，一个显示对象也只能有一个显示深度
+2.显示深度总是从0开始连续的，当某个深度位置的显示对象被设置为其他深度时，原来的深度会自动被紧邻的比其深度值大1位置的显示对象占据，后续深度位置的显示对象会一次往前排
+3.某一容器内的显示列表的深度最大值是显示列表长度-1
+
+this.swapChildren(superman, hulk)
+
+this.setChildIndex(captain, 20)
+
+Tween动画效果
+设计某种属性的两个不同状态，然后在给定的时间内从一个状态平滑过渡到另一个状态
+
+锚点就是定位点，是只存在于显示对象的概念，并且锚点是对显示对象自身设置的
+anchorOffsetX anchorOffsetY
+
+hulk.anchorOffsetX = 30
+hulk.anchorOffsetY = 40
+hulk.x += 30
+hulk.y += 40
+
+private times:number
+
+this.times = -1
+var self = this
+this.stage.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+    switch (++ self.times % 3) {
+        case 0: {
+            egret.Tween.get(batman).to({x: superman.x}, 300, egret.Ease.circIn)
+            egret.Tween.get(superman).to({x: batman.x}, 300, egret.Ease.circIn)
+            break;
+        },
+        case 1: {
+            egret.Tween.get(captain).to({alpha: .3}, 300, egret.Ease.circIn).to({alpha: 1}, 300, egret.Ease.circIn)
+            break;
+        },
+        case 2: {
+            egret.Tween.get(hulk).to({scaleX: .4, scaleY: .4}, 500, egret.Ease.circIn).to({scaleX: 1, scaleY: 1}, 500, egret.Ease.circIn)
+            break;
+        },
+    }
+})
+
+声音资源配置
+{
+    "resource": [
+        {
+            "name": "bonus.mp3",
+            "type": "sound",
+            "url": "assets/bonus.mp3",
+        }
+    ],
+    "groups": [
+        {
+            "name": "preload",
+            "keys": "bgImage, egretIcon"
+        }
+    ]
+}
+
+var sound:egret.Sound = RES.getRes("bonus.mp3")
+var channel:egret.SoundChannel = sound.play(0, 1)
+
+常规网络通讯
+
+URLRequest
+var urlreq:egret.URLRequest = new egret.URLRequest("http://httpbin.org/user-agent")
+
+var urlLoader:egret.URLLoader = new egret.URLLoader()
+urlLoader.addEventListener(egret.EVENT.COMPLETE, function (evt:egret.Event):void {
+    console.log(evt.target.data)
+}, this)
+urlLoader.load(urlreq)
+
+private webSocket:egret.WebSocket
+private createGameScene():void {
+    this.webSocket = new egret.WebSocket()
+    this.webSocket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this)
+    this.webSocket.addEventListener(egret.EVENT.CONNECT, this.onSocketOpen, this)
+    this.webSocket.connect("echo.websocket.org", 80)
+}
+
+private onSocketOpen():void {
+    var cmd = "Hello Egret WebSocket"
+    this.webSocket.writeUTF(cmd)
+}
+
+private onReceiveMessage(e:egret.Event):void {
+    var msg = this.webSocket.readUTF()
+}
+
+【2】、生命周期
+
+stage.addEventListener(egret.Event.ACTIVATE, () => {
+    console.log("app 进入前台")
+}, this)
+
+stage.addEventListener(egret.Event.DEACTIVATE, () => {
+    console.log("app 进入后台")
+}, this)
+
+egret.lifecycle.onPause = () => {
+    console.log("app 进入后台")
+    egret.ticket.pause()
+}
+
+egret.lifecycle.onPause = () => {
+    console.log("app 进入前台")
+    egret.ticket.resume()
+}
+
+declare interface Window {
+    appInBackgound: boolean
+}
+egret.lifecycle.addLifecycleListener((context) => {
+    document.addEventListener("qbrowserVisibilityChange", function(e:any) {
+        if (e.hidden) {
+            context.pause()
+        } else {
+            context.resume()
+        }
+    })
+    context.onUpdate = () => {
+        if (window.appInBackground) {
+            context.pause()
+        } else {
+            context.resume()
+        }
+    }
+})
+
+【3】、安装和部署
+
+【4】、启动器
+
+【5】、命令行手册
+
+egret create project_name [--type empty|game|gui|eui]
+
+egret create_lib lib_name
+
+egret create_app app_name -f h5_game_path -t template_path
+
+egret build [project_name] [-e] [--runtime native]
+
+egret publish [project_name] [--version] [--runtime ]
+
+egret startserver [project_name] [--port 3000] [-ip] [-serveronly]
+
+egret clean
+
+egret upgrade
+
+egret make
+
+egret apitest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

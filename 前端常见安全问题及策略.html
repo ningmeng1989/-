@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>前端常见安全问题及策略</title>
+</head>
+<body>
+
+xss sql 攻击
+csrf
+请求劫持和HTTPS
+
+DNS劫持：
+DNS劫持就是通过劫持了DNS服务器，通过某些手段取得某域名的解析记录控制权，进而修改此域名的解析结果，导致对该域名的访问由原IP地址转入到修改后的指定IP，其结果就是对特定的网址不能访问或访问的是假网址，从而实现窃取资料或者破坏原有正常服务的目的。
+
+X-Content-Type-Options
+
+Strict-Transport-Security
+
+Content-Security-Policy
+
+X-Frame-Options
+
+Access-Control-Allow-Origin
+
+Public-Key-Pins
+
+XSS-跨站脚本攻击--
+
+在不需要html输入的地方对html标签及一些特殊字符 " < > & 等等 做过滤，将其转化为不被浏览器解释执行的字符
+
+对属性中可能存在截断的一些字符进行过滤，属性本身存在的单引号 双引号 都需要进行转码
+
+对用户输入的html标签及标签属性做白名单过滤，也可以对一些存在漏洞的标签和属性进行专门过滤
+
+对属性中可能存在的阶段的一些字符进行过滤，属性本身存在的单引号 和双引号都需要进行转码
+
+CSRF-跨站点伪造请求--
+cookie劫持-
+
+通过referer token或者验证码来检测用户
+尽量不要在页面的链接中暴露任何与用户唯一号有关的信息
+对于用户修改 删除 提交的操作最好都使用post操作
+避免全站通用的cookie 严格的设置cookie的域
+
+同源策略限制了一个源中加载文本和脚本与来自其他源中资源的交互方式。简单的说就是一个源的页面上的js只能访问当前源的资源，不能访问其他源的资源。
+
+DOM
+通过Ajax请求的网络资源
+Cookie
+WebStorage webSql
+
+XSS-Cross-Site Script
+利用各种手段把恶意代码添加到网页中，并让受害者执行这段脚本
+
+放在XSS攻击-转义
+
+无论什么时候都不要把不受信任的数据直接插入到dom中的任何位置，一定要做转义
+
+1、对于某些位置，不受信任的数据做转义就可以保证安全
+div body 内部的html
+一般的标签属性值
+
+2、对于某些位置，即使做了转义依然不安全
+<script></script>
+注释中
+标签的属性名
+标签名
+css标签中
+
+3、使用JSON.parse而不是eval，request的content-type要指定的是Content-Type: application/json
+
+4、如果链接的URL中部分是动态生成的，一定要做转义
+
+HTML转义
+& &amp;
+< &lt;
+> &gt;
+" &quot;
+' &#x27;
+/ &#x2F;
+
+XSS-filter
+现代浏览器都对反射型XSS有一定的防御力，其原理是检查url和dom中元素的相关性，但这并不能完全防止反射型XSS
+
+CSP-Content Security Policy
+CSP的作用是限制一个页面的行为不论是否是javascript控制的
+
+base-uri
+child-src
+connect-src
+font-src
+form-action
+frame-ancestor
+frame-src
+img-src
+media-src
+object-src
+sandbox
+
+CSP是一个强大的策略，几乎可以限制所有能够用到的资源的来源，
+
+X-Frame-Options
+--DENY SAMEORIGIN <uri></uri>
+
+Http-Only
+保证cookie是不会被javascript读写
+
+iframe沙箱环境
+
+HSTS HTTP Strict-Transport-Security
+
+Crypto(加密)
+
+创建XMLHttpRequest对象，也就是创建一个异步调用对象
+创建一个新的HTTP请求，并指定该HTTP请求的方法、URL和验证信息
+设置响应HTTP请求状态变化的函数
+发送HTTP请求
+获取异步调用返回的数据
+使用JavaScript和DOM实现局部刷新
+
+Q:一个页面从输入URI到页面加载显示完成，这个过程都发生了什么？
+查找浏览器缓存
+DNS解析，查找该域名对应的IP地址，重定向（301），发出第二个GET请求
+进行HTTP协议会话
+客户端发送报头
+服务器反馈报头
+html文档开始下载
+文档树建立，根据标记请求所需指定MIME类型的文件
+文件显示
+
+Array.prototype.unique1 = function () {
+    var n = [];
+    for (var i = 0; i < this.length; i++) {
+        if(n.indexOf(this[i]) == -1) n.push(this[i])
+    }
+    return n;
+}
+
+Array.prototype.unique2 = function () {
+    var n = {}, r = [];
+    for (var i = 0; i < this.length, i++) {
+        if (!n[this[i]]) {
+            n(this[i]) = true;
+            r.push(this[i]);
+        }
+    }
+    return r;
+}
+
+Array.prototype.unique3 = function () {
+    var n = [this[0]];
+    for (var i = 1; i< this.length; i++) {
+        if (this.indexOf(this[i]) == i) n.push(this[i]);
+    }
+    return n;
+}
+
+判断回文
+
+const isPalindromicA = w === w.split('').reverse().join('');
+
+const isPalindromicB = (w) => {
+    let len = w.length;
+    let mid = (len / 2) || 0;
+
+    while (mid) {
+        if (w[mid] !== w[len - mid - 1]) {
+            return false;
+        }
+        mid --;
+    }
+}
+
+var word = (function() {
+    var len = 20;
+    var arr = [];
+    while (len --) {
+        arr.push(97 + ((Math.random() * 26) | 0));
+    }
+    return String.fromCharCode.apply(String, arr);
+})()
+
+var t = 2e4;
+var i = 0;
+while (i < i)
+
+统计一个字符串出现最多的字母
+
+const findMaxDuplicateCharRegex = (chars) => {
+    chars = chars.split('').sort().join('');
+    let regex = /(.)(\1)+/;
+    let temp = null;
+    let max = 0;
+    let char = '';
+
+    while (temp = regex.exec(chars)) {
+        if (temp[0].length > max) {
+            char = temp[1];
+            max = temp[0].length;
+        }
+    }
+    return char;
+}
+
+var findMaxDuplicateCharNormal = function(chars) {
+    if (str.length == 1) {
+        return str;
+    }
+    let charObj = {};
+    for (let i = 0; i < str.length; i++) {
+        if (!charObj[str.charAt(i)]) {
+            charObj[str.charAt(i)] = 1;
+        } else {
+            charObj[str.charAt(i)] += 1;
+        }
+    }
+    let maxChar = '';
+    let maxValue = 1;
+    for (var k in charObj) {
+        if(charObj[k] >= maxValue) {
+            maxChar = k;
+            maxValue = charObj[k];
+        }
+    }
+    return maxChar;
+}
+
+[a, b] = [b, a]
+
+a = a - b;
+b = b + a;
+a = b - a;
+
+a = a ^ b;
+b = a ^ b;
+a = b ^ a;
+
+const fibonacciDynamic = function(n) {
+    let array = [0, 1];
+    for (let i = 2; i < n + 1; i ++) {
+        array[i] = array[i - 1] + array[i - 2];
+    }
+    return array[n];
+};
+
+const fibonacciTailCall = function(n, ac1 = 1, ac2 = 2) {
+    if (n <= 1) {
+        return ac2;
+    }
+    return fibonacciTailCall(n - 1, ac2, ac1 + ac2);
+}
+
+const fibonacciGenerator = (function() {
+    function * fib() {
+        let a  = 0,
+            b = 1,
+            sum = 0;
+
+        while (true) {
+            sum = a + b;
+            b = a;
+            a = sum;
+            yield sum;
+        }
+    }
+
+    return function(n) {
+        var iterator = fib();
+        let result = 0;
+        while (n--) {
+            result = iterator.next();
+        }
+        return result.value;
+    }
+})();
+
+const getMaxGap = (array) => Math.max.apply(Math, array) - Math.min.apply(Math, array);
+
+const getMaxDiff = (array) => {
+    if (array.length < 1) return array[0];
+    array = array.reduce(([max, min], el) => {
+        max = el > max ? el : max;
+        min = el < min ? el : min;
+        return [max, min];
+    }, array);
+    return array[0] - array[1];
+}
+
+function getMaxProfix(arr) {
+    var minPrice = arr[0];
+    var maxProfix = 0;
+
+    for (var i = 0; i < arr.length; i++) {
+        var currentPrice = arr[i];
+        minPrice = Math.min(minPrice, currentPrice);
+        var potentialProfit = currentPrice - minPrice;
+        maxProfit = Math.max(maxProfit, potentialProfit);
+    }
+
+    return maxProfit;
+}
+
+冒泡排序法
+function bubbleSort(arr) {
+    for(let i = 0, l = arr.length; i < l - 1; i ++) {
+        for(let j = i + 1; j < l; j++) {
+            if(arr[i] > arr[j]) {
+                let tmp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = tmp;
+            }
+        }
+    }
+    return arr;
+}
+
+function quickSort(arr) {
+    if(arr.length <= 1) {
+        return arr;
+    }
+
+    let leftArr = [];
+    let rightArr = [];
+    let q = arr[0];
+    for (let i = 1, l = arr.length; i < l; i ++) {
+        if(arr[i] > q) {
+            rightArr.push(arr[i]);
+        } else {
+            leftArr.push(arr[i]);
+        }
+    }
+    return [].concat(quickSort(leftArr), [q], quickSort(rightArr));
+}
+
+随机生成指定长度的字符串
+function randomString(n) {
+    let str = 'abcdefghijklmnopqrstuvwxyz9876543210';
+    let tmp = '', i = 0, l = str.length;
+
+    for (i = 0; i < n; i ++) {
+        tmp += str.charAt(Math.floor(Math.random() * l));
+    }
+    return tmp;
+}
+
+getElementsByClassName
+
+function queryClassName(node, name) {
+    var starts = '(^|[ \n\r\t\f])',
+        ends = '([ \n\r\t\f]|$)';
+    var array = [],
+        ragex = new Regex(starts + name + ends),
+        elements = node.getElementsByTagName('*'),
+        length = elements.length,
+        i = 0,
+        element;
+    while (i < length) {
+        element = elements[i];
+        if(regex.test(element.className)) {
+            array.push(element)
+        }
+        i += 1;
+    }
+    return array;
+}
+
+class BinarySearchTree {
+
+    constructor() {
+        this.root = null;
+    }
+
+    insert(data) {
+        let n = new Node(data, null, null);
+        if (!this.root) {
+            return this.root = n;
+        }
+        let currentNode = this.root;
+        let parent = null;
+        while (1) {
+            parent = currentNode;
+            if (data < currentNode.data) {
+                currentNode = currentNode.left;
+                if (currentNode === null) {
+                    parent.left = n;
+                    break;
+                }
+            } else {
+                currentNode = currentNode.right;
+                if (currentNode === null) {
+                    parent.right = n;
+                    break;
+                }
+            }
+        }
+    }
+
+    remove(data) {
+        this.root = this.removeNode(this.root, data);
+    }
+
+    removeNode(node, data) {
+        if (node == null) {
+            return null;
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NodeJS</title>
+</head>
+<body>
+
+Node.js是一个事件驱动I/O服务端JavaScript环境，基于Google的V8引擎，V8引擎执行JavaScript的速度非常快，性能非常好
+
+使用Node.js时，我们不仅仅在实现一个应用，同时还实现了整个HTTP服务器。
+
+Node.js应用由哪几部分组成：
+引入required模块
+创建服务器
+接收请求与响应请求
+
+NPM常见的使用场景：
+从NPM服务器下载别人编写的第三方包到本地使用
+从NPM服务器下载并安装别人编写的命令行程序到本地使用
+将自己编写的包或命令行程序上传到NPM服务器供别人使用
+
+REPL(Read Eval Print Loop)--交互式解释器
+
+Node.js事件循环
+
+Node.js是单进程单线程应用程序，但是通过事件和回调支持并发，所以性能非常高
+Node.js的每一个API都是异步的，并作为一个独立线程运行，使用异步函数调用，并处理并发
+Node.js基本上所有的事件机制都是用设计模式中观察者模式实现
+Node.js单线程类似进入一个while的事件循环，直到没有事件观察者退出，每个异步事件都生成一个事件观察者，如果有事件发生就调用该回调函数
+
+在Node应用程序中，执行异步操作的函数将回调函数作为最后一个参数，回调函数接收错误对象作为第一个参数
+
+Node.js所有的异步I/O操作在完成时都会发送一个事件到事件队列
+Node.js里面的许多对象都会分发事件，一个net.Server对象会在每次有新连接时分发一个事件，一个fs.readStream对象会在文件被打开的时候发出一个事件，所有这些产生事件的对象都是events.EventEmitter的实例
+
+events模块只提供了一个对象，events.EventEmitter。EventEmitter的核心就是事件触发和事件监听功能的封装
+
+var EventEmitter = require('events').EventEmitter;
+var event = new EventEmitter();
+event.on('some_event', function() {})
+setTimeout(function() {
+    event.emit('some_event');
+}, 1000)
+
+对每个事件，EventEmitter支持若干个事件监听器
+当事件触发，注册到这个事件的事件监听器被依次调用，事件参数作为回调函数参数传递
+
+addListener(event, listener)--为指定事件添加一个监听器到监听器数组的尾部
+on(event, listener)--为指定事件注册一个监听器，接收一个字符串event和一个回调函数
+once(event, listener)--为指定事件注册一个单次监听器
+removeListener(event, listener)--移除指定事件的某个监听器
+removeAllListener([event])
+setMaxListeners(n)--默认情况下，EventEmitter如果你你添加的监听器超过10个就会输出警告信息，setMaxListeners函数用于提高监听器的默认限制的数量
+listeners(event)--返回指定事件的监听器函数
+emit(event, arg1, arg2)
+
+listenerCount(emitter, event)--返回指定事件的监听器数量
+
+newListener--
+removeListener
+
+EventEmitter定义了一个特殊的事件error，它包含了错误的语义，我们在遇到异常的时候通常会触发error事件，当error被触发时，EventEmitter规定如果没有响应的监听器，Node.js会把它当做异常，退出程序并输出错误信息，我们一般要为触发error事件的对象设置监听器，避免遇到错误后整个程序崩溃。
+
+大多数时候我们不会直接使用EventEmitter，而是在对象中继承它，包括fs、net、http在内的，只要是支持事件响应的核心模块都是EventEmitter的子类
+--具有某个实体功能的对象实现事件符合语义，事件的监听和发生应该是一个对象的方法
+--JavaScript的对象机制是基于原型的，支持部分多重继承，继承EventEmitter不会打乱对象原有的继承关系
+
+Buffer用来创建一个专门存放二进制数据的缓存区
+Node.js目前支持的字符编码包括：
+ascii utf8 utf16le ucs2 base64 latin1 binary hex
+
+创建Buffer类
+Buffer.alloc(size, fill, encoding)--
+Buffer.allocUnsafe(size)
+Buffer.allocUnsafeSlow(size)
+Buffer.from(array)--传入的array的元素只能是数字，不然会自动被0覆盖
+Buffer.from(arrayBuffer, byteOffset, length)--返回一个新建的与给定的ArrayBuffer共享同一内存的Buffer
+Buffer.from(buffer)
+Buffer.from(string, encoding)
+
+写入缓冲区
+buf.write(string, offset, length, encoding)
+string--写入缓冲区的字符串
+offset--缓冲区开始写入的索引值
+length--写入的字节数
+encoding--使用的编码
+返回实际写入的大小
+
+buf.toString(encoding, start, end)
+encoding--使用的编码
+start--指定开始读取的索引位置
+end--结束位置，默认为缓冲区的末尾
+解码缓冲区数据并使用指定的编码返回字符串
+
+将Buffer转换为JSON对象
+buf.toJSON()
+
+缓冲区合并
+Buffer.concat(list, totalLength)
+
+缓冲区比较
+buf.compare(otherBuffer)
+返回一个数字，表示buf在otherBuffer之前，之后或相同
+
+拷贝缓冲区
+buf.copy(targetBuffer, targetStart, sourceStart, sourceEnd)
+
+buf.slice(start, end)
+
+buf.length
+返回Buffer对象所占据的内存长度
+
+new Buffer(size)
+new Buffer(buffer)
+new Buffer(str, encoding)
+buf.length
+buf.write(string, offset, length, encoding)
+buf.writeUIntLE(value, offset, byteLength, noAssert)
+buf.writeUIntBE(value, offset, byteLength, noAssert)
+buf.writeIntLE(value, offset, byteLength, noAssert)
+buf.writeIntBE(value, offset, byteLength, noAssert)
+buf.readUIntLE(offset, byteLength, noAssert)
+buf.readUIntBE(offset, byteLength, noAssert)
+buf.readIntLE(offset, byteLength, noAssert)
+buf.readIntBE(offset, byteLength, noAssert)
+buf.toString(encoding, start, end)
+buf.toJSON()
+buf[index]
+buf.equals(otherBuffer)
+buf.compare(otherBuffer)
+buf.copy
+.slice
+.readUInt8
+.readUInt16LE
+.readUInt16BE
+.readUInt32LE
+.readUInt32BE
+.readInt8
+.readInt16LE
+.readInt16BE
+.readInt32LE
+.readInt32BE
+.readFloatLE
+.readFloatBE
+.readDoubleLE
+.readDoubleBE
+.writeUInt8
+.writeUInt16LE
+.writeUInt16BE
+.writeUInt32LE
+.writeUInt32BE
+.writeInt8
+.writeInt16LE
+.writeInt16BE
+.writeInt32LE
+.writeInt32BE
+.writeFloatLE
+.writeFloatBE
+.writeDoubleLE
+.writeDoubleBE
+.fill(value, offset, end)
+
+Stream(流)
+
+Node.js，Stream有四种流类型：
+Readable
+Writable
+Duplex--可读可写操作
+Transform--操作被写入数据，然后读出结果
+
+所有的Stream对象都是EventEmitter的实例，常用的事件有：
+data--当有数据可读时触发
+end
+error
+finish--所有数据已被写入到底层系统时触发
+
+var fs = require('fs')
+var data = ''
+
+var readerStream = fs.createReadStream('input.txt')
+readerStream.setEncoding('UTF8')
+
+readerStream.on('data', function(chunk) {
+    data += chunk;
+})
+
+readerStream.on('end', function() {
+
+})
+
+readerStream.on('error', function(err) {
+
+})
+
+var writeStream = fs.createWriteStream('output.txt')
+writeStream.write(data, 'UTF8')
+writeStream.end()
+
+writeStream.on('finish', function() {
+    console.log('写入完成')
+})
+writeStream.on('error', function(err) {
+    console.log(err.stack)
+})
+
+管道流
+管道提供了一个输出流到输入流的机制，通常我们用于从一个流中获取数据并将数据传递到另外一个流中
+
+var readerStream = fs.createReadStream('input.txt');
+var writerStream = fs.createWriteStream('output.txt');
+
+readerStream.pipe(writerStream)
+
+链式流
+链式是通过连接输出流到另一个流并创建多个流操作链的机制，链式流一般用于管道操作
+如用管道和链式来压缩和解压文件
+
+fs.createReadStream('input.txt')
+    .pipe(zlib.createGzip())
+    .pipe(fs.createWriteStream('input.txt.gz'))
+
+
+fs.createReadStream('input.txt.gz')
+    .pipe(zlib.createGunzip())
+    .pipe(fs.createWriteStream('input.txt'))
+
+模块系统
+一个Node.js文件就是一个模块，这个文件可能是JavaScript代码，JSON或者编译过的C/C++扩展
+./ 当前目录
+exports--是模块公开的接口
+require--从外部获取一个模块的接口
+
+exports.world = function() {}
+
+module.exports = 在外部引用该模块时，其接口对象就是要输出的Hello对象本身，而不是原先的exports
+
+1、从文件模块缓存中加载
+2、从原生模块加载
+3、从文件加载
+
+http.createServer(function(request, response) {
+    response.writeHead(200, {"Content-Type": "text-plain"});
+    response.write("Hello World");
+    response.end();
+}).listen(8888);
+
+Node.js路由
+
+我们要为路由提供请求的URL和其他需要的GET和POST参数，随后路由需要根据这些数据来执行相应的代码
+因此，我们需要查看HTTP请求，从中提取出请求的URL以及GET/POST参数
+url queryString
+
+var http = require("http")
+var url = require("url")
+
+function start() {
+    function onRequest(request, response) {
+        var pathname = url.parse(request.url).pathname;
+        console.log("Request for " + pathname + " received.");
+        response.writeHead(200, {"Content-Type": "text-plain"});
+        response.write("Hello World");
+        response.end();
+    }
+
+}
+
+Node.js中的全局对象是global
+
+global最根本的作用是作为全局变量的宿主
+在最外层定义的变量
+全局对象的属性
+隐式定义的变量
+
+当你定义一个全局变量时，这个变量同时也会成为全局对象的属性。
+在Node.js中你不可能在最外层定义变量，因为所有用户代码都是属于当前模块的，而模块本身不是最外层上下文
+
+__filename 表示当前正在执行的脚本的文件名，它将蔬菜文件所在位置的结对路径
+/web/nodejs/main.js
+
+__dirname 表示当前执行脚本所在的目录
+/web/nodejs
+
+setTimeout
+clearTimeout
+
+setInterval
+
+console
+
+console.log()
+console.info()
+console.error()
+console.warn()
+console.dir--用来对一个对象进行检查，并以易于阅读和打印的格式显示
+console.time(label)
+console.timeEnd(label)
+console.trace()--当前执行的代码在堆栈中的调用路径
+console.assert()
+
+process
+用于描述当前Node.js进程状态的对象
+exit
+beforeExit
+uncaughtException
+signal
+
+退出状态码：
+1--Uncaught Fatal Exception
+2--Unused
+3--Internal JavaScript Parse Error
+4--Internal JavaScript Evaluation Error
+5--Fatal Error
+6--Non-function Internal Exception Handler
+7--Internal Exception Handler Run-Time Failure
+9--Invalid Argument
+10--Internal JavaScript Run-Time Failure
+12--Invalid Debug Argument
+128--Signal Exits
+
+属性：
+stdout
+stderr
+stdin
+argv
+execPath--
+execArgv
+env
+exitCode
+version
+versions
+config
+pid
+title
+arch
+platform
+mainModule
+
+Process提供的有用的方法：
+abort()--
+chdir()
+cwd()
+exit()
+getgid()
+setgid(id)
+getuid()
+setuid(id)
+getgroups()
+setgroups(groups)
+initgroups(user, extra_group)
+kill(pid, signal)
+memoryUsage()
+nextTick--一旦当前事件循环结束，调用回调函数
+umask()--设置或读取进程文件的掩码
+uptime--返回Node已经运行的时间
+hrtime--返回当前进程的高分辨时间
+
+Node.js常用工具
+util是一个Node.js核心模块，提供常用函数的集合，用于弥补核心JavaScript的功能过于精简的不足
+
+util.inherits(constructor, superConstructor)
+
+Sub仅仅继承了Base在原型中定义的函数，而构造函数内部创造的base属性和sayHello函数没有被Sub继承
+
+Util.inspect(object, showHidden, depth)
+
+Util.isArray(Object)
+
+Util.isRegExp(object)
+
+Util.isDate(object)
+
+Util.isError(object)
+
+Node.js文件系统
+
+Node.js文件系统模块中的方法都有异步和同步版本
+fs.readFile() readFileSync()
+
+异步方法函数的最后一个参数是回调函数，回调函数的第一个参数包含了错误信息
+异步方法性能更高，速度更快，而且没有阻塞
+
+fs.readFile('input.txt', function(err, data) {
+    if(err) {}
+})
+
+var data = fs.readFileSync('input.txt')
+
+fs.open(path, flags, mode, callback)
+
+flags:
+r  读取模式
+r+  读写模式
+rs  同步方式读取
+rs+  同步方式读写
+w  写入模式，文件不存在则创建
+wx  写入，文件不存在则写入失败
+w+  读写模式，文件不存在则创建
+wx+ 读写模式，文件不存在则写入失败
+a  追加模式，文件不存在则创建
+ax  追加模式，文件不存在则追加失败
+a+  读写追加模式，文件不存在则创建
+ax+  读写追加模式，文件不存在则追加失败
+
+fs.open('input.txt', 'r+', function(err, fd) {
+
+})
+
+获取文件信息
+fs.stat(path, callback)
+
+stats是fs.Stats对象
+isFile()--是文件为true
+isDirectory--是目录为true
+isBlockDevice--块设备
+isCharacterDevice--字符设备
+isSymbolicLink--软链接
+isFIFO--是UNIX中一种特殊类型的命令管道
+isSocket--Socket
+
+dev
+mode
+nlink
+uid
+gid
+rdev
+blksize
+ino
+size
+blocks
+atime
+mtime
+ctime
+
+写入文件
+fs.writeFile(file, data, options, callback
+)
+
+fs.read(fd, buffer, offset, length, options, callback)
+
+fd--通过fs.open()方法返回的文件描述符
+buffer--数据写入的缓冲区
+offset--缓冲区写入的写入偏移量
+length--要从文件中读取的字节数
+position--
+callback--err, bytesRead, buffer
+
+fs.close(fd. callback)
+
+fs.ftruncate(fs, len, callback)
+
+fs.unlink(path, callback)
+
+创建目录
+fs.mkdir(path, mode, callback)
+
+fs.readdir(path, callback)
+回调后一个参数为files，目录下的文件数组列表
+
+fs.rmdir(path, callback)
+
+fs.rename(oldPath, newPath, callback)
+fs.ftruncate(fd, len, callback)
+fs.ftruncateSync(fd, len)
+fs.truncate(path, len, callback)
+fs.truncateSync(path, len)
+fchown
+lchown
+chmod
+fchmod
+lchmod
+stat
+lstat
+fstat
+link
+symlink
+readlink
+realpath
+unlink
+rmdir
+mkdir
+readdir
+close
+open
+utimes
+futimes
+fsync
+write
+read
+readFile
+write
+writeFile
+appendFile
+watchFile
+unwatchFile
+exists
+access
+createReadStream
+createWriteStream
+symlink
+
+GET/POST请求
+
+util.inspect(url.parse(req.url, true))
+
+url.parse(req.url, true).query
+
+var querystring = require('querystring')
+
+var post = ''
+req.on('data', function(chunk) {
+    post += chunk;
+})
+req.on('end', function() {
+    post = querystring.parse(post);
+    res.end(util.inspect(post))
+})
+
+OS模块
+os.tmpdir()--操作系统的默认临时文件夹
+endianness--返回CPU的字节序，BE LE
+hostname--操作系统的主机名
+type--操作系统名
+platform--操作系统名
+arch--操作系统的CPU架构
+release--操作系统的发行版本
+uptime--操作系统的运行时间
+loadavg--返回一个包含1 5 15分钟平均负载的数组
+totalmem--系统内存总量
+freemem--系统空闲内存量
+cpus--返回一个对象数组，包含所安装的每个CPU内核的信息
+networkInterfaces--获得网络接口列表
+
+Path模块
+path.normalize(p)
+path.join(path1, path2)
+path.resolve(from, to)--将to参数解析为绝对路径
+isAbsolute(path)--是否为绝对路径
+relative(from, to)--将相对路径转为绝对路径
+dirname(p)--返回路径中代表文件夹的部分
+basename(p)--返回路径中最后一部分
+extname(p)--返回路劲中文件的后缀名
+parse(path String)--返回路径字符串的对象
+path.format(pathObject)--从对象中返回路径字符串
+
+path.sep
+path.delimiter
+path.posix
+path.win32
+
+Net模块
+提供了一些用于底层的网络通信的小工具，包含了创建服务器/客户端的方法
+
+net.createServer(options, connectionListener)
+net.connect(options, connectionListener)
+net.createConnection(options, connectionListener)
+net.connect(port, host, connectionListener)
+net.createConnection(port, host, connectListener)
+net.connect(path, connectListener)
+net.createConnection(path, connectListener)
+net.isIP(input)
+net.isIPv4(input)
+net.isIPv6(input)
+
+
+server.listen(port, host, backlog, callback)
+server.listen(path, callback)
+server.listen(handle, callback)
+server.listen(options, callback)
+server.close(callback)
+server.address()--返回绑定的地址，协议族号和服务器端口
+server.unref()
+server.ref()
+server.getConnections(callback)--异步获取服务器当前活跃连接的数量
+
+事件：
+listening
+connection
+close
+error
+
+net.Socket 事件
+lookup
+connect
+data
+end
+timeout
+drain--写缓存为空的时候触发
+err
+close
+
+net.Socket有很多有用的属性
+socket.bufferSize
+remoteAddress
+remoteFamily
+remotePort
+localAddress
+localPort
+bytesRead
+bytesWritten
+
+net.Socket的方法
+new net.Socket(options)
+connect(port, host, connectListener)
+setEncoding(encoding)
+write(data, encoding, callback)
+end(data, encoding)
+destroy()
+pause()
+resume
+setTimeout(timeout, callback)
+setNoDelay()
+setKeepAlive(enable, initialDelay)--
+address()
+unref()
+ref()
+
+DNS 模块
+
+dns.lookup(hostname, options, callback)--将域名解析为第一条找到的记录
+dns.lookupService(address, port, callback)--使用getnameinfo解析传入的地址和端口为域名和服务
+dns.resolve(hostname, rrtype, callback)--将一个域名解析为一个rrtype指定记录类型的数组
+dns.resolve4(hostname,callback)--将一个域名解析为一个rrtype指定记录类型的数组，IPV4
+dns.resolve6(hostname,callback)--将一个域名解析为一个rrtype指定记录类型的数组，IPV6
+dns.resolveMx--仅能查询邮件交换
+dns.resolveTxt(hostname, callback)--仅能进行文本查询
+dns.resolveSrv(hostname, callback)
+dns.resolveSoa(hostname, callback)
+dns.resolveNs
+dns.resolveCname()
+dns.reverse(ip, callback)
+dns.getServers()--返回一个用于当前解析的IP地址数组的字符串
+dns.setServers(servers)--
+
+rrtypes有效的值：
+A
+AAAA
+MX
+TXT
+SRV
+PTR
+NS
+CNAME
+SOA
+
+dns.NODATA
+dns.FORMERR
+SERVFAIL
+NOTFOUND
+NOTIMP
+REFUSED
+BADQUERY
+BADNAME
+BADFAMILY
+BADRESP
+CONNREFUESD
+TIMEOUT
+EOF
+FILE
+NOMEM
+DESTRUCTION
+BADSTR
+NONAME
+BADHINTS
+NOTINITIALIZED
+LOADIPHLPAPI
+ADDRGETNETWORKPARAMS
+CANCELED
+
+Domain 模块
+
+domain模块，把处理多个不同的IO的操作作为一个组，注册事件和回调到domain，当发生一个错误事件或抛出一个错误时，domain对象会被通知，不会丢失上下文环境，也不导致程序错误立即退出。
+
+domain.run(function)
+domain.add(emitter)
+domain.remove(emitter)
+domain.bind(callback)
+domain.intercept(callback)
+domain.enter()
+domain.exit()
+domain.dispose()
+domain.creat()
+
+domain.members
+
+
+Node.js v8.9.0 文档
+
+（一）、assert 断言
+
+断言测试的函数，用于测试不变式
+
+assert(value, message)--assert.ok()的别名
+
+assert.deepEqual(actual, expected, message)
+测试actual参数与expected参数是否深度相等，原始值使用==比较
+只测试可枚举的自身属性，不测试对象的原型、连接符、或不可枚举的属性
+子对象中可枚举的自身属性也会被测试
+
+assert.deepStrictEqual(actual, expected, message)
+与assert.deepEqual()大致相同，一些区别：
+原始值使用===比较
+对象的原型也使用全等运算符比较
+对象的类型标签要求相同
+如果两个值不相等，则抛出一个带有message属性的AssertionError，其中message属性的值等于传入的message参数的值
+
+assert.doesNotThrow(block, error, message)
+断言block函数不会抛出错误
+当assert.doseNotThrow()被调用时，它会立即调用block函数
+如果抛出错误且错误类型与error参数指定的相同，则抛出AssertionError，如果错误类型不相同，或error参数为undefined，则抛出错误
+
+assert.equal(actual, expected, message)
+使用==测试actual参数与expected参数是否相等
+如果两个值不相等，则抛出一个带有message属性的AssertionError，其中message属性的值等于传入的message参数的值，如果message参数为undefined，则赋予默认的错误信息
+
+assert.fail(message)
+assert.fail(actual, expected, message, operator, stackStartFunction)
+
+assert.ifError(value)
+如果value为真，则抛出value，可用于测试回调函数的error参数
+
+assert.notDeepEqual(actual, expected, message)
+
+assert.notDeepStrictEqual(actual, expected, message)
+
+assert.notEqual(actual, expected, message)
+
+assert.notStrictEqual(actual, expected, message)
+
+assert.ok(value, message)
+
+assert.strictEqual(actual, expected, message)
+
+assert.throws(block, error, message)
+
+（二）、Buffer--缓冲器
+
+Buffer.alloc(size, fill, encoding)
+
+Buffer.allocUnsafe(size)
+
+Buffer.allocUnsafeSlow(size)
+
+Buffer.byteLength(string, encoding)
+
+Buffer.compare(buf1, buf2)
+
+Buffer.concat(list, totalLength)
+
+Buffer.from(array)
+
+Buffer.from(arrayBuffer, byteOffset, length)
+
+Buffer.poolSize--用于决定预分配的、内部Buffer实例池的大小的字节数
+
+buf[index]
+buf.buffer
+buf.compare(target, targetStart, targetEnd, sourceStart, sourceEnd)
+buf.copy(target, targetStart, sourceStart, sourceEnd)
+buf.entries()
+buf.equals(otherBuffer)
+buf.fill(value, offset, end, encoding)
+buf.includes(value, byteOffset, encoding)
+buf.indexOf(value, bodyOffset, encoding)
+buf.keys()
+buf.lastIndexOf()
+buf.length
+buf.readDoubleBE(offset, noAssert)
+buf.readDoubleLE(offset, noAssert)
+buf.readFloatBE(offset, noAssert)
+buf.readFloatLE(offset, noAssert)
+buf.slice(start, end)
+buf.swap16()
+buf.toJSON()
+buf.toString(encoding, start, end)
+buf.values()
+buf.write(string, offset, length, encoding)
+buf.writeDoubleBE(value, offset, noAssert)
+buf.writeDoubleLE(value, offset, noAssert)
+buffer.INSPECT_MAX_BYTES
+buffer.kMaxLength
+buffer.transcode(source, fromEnc, toEnc)
+Buffer.constants.MAX_LENGTH
+Buffer.constants.MAX_STRING_LENGTH
+
+（三）、child_process--子进程
+
+child_process.exec(command, options, callback)
+child_process.execFile(file, args, options, callback)
+child_process.fork(modulePath, args, options)
+child_process.spawn(command, args, options)
+  options.detached
+  options.stdio
+
+child_process.execFileSync(file, args, options)
+child_process.execSync(command, options)
+child_process.spawnSync(command, args, options)
+
+close
+disconnect
+error
+exit
+message
+
+subprocess.channel
+subprocess.connected
+subprocess.disconnect
+subprocess.kill
+subprocess.killed
+subprocess.pid
+subprocess.send(message, sendHandle, options, callback)
+subprocess.stderr
+subprocess.stdin
+subprocess.stdout
+
+maxBuffer与Unicode
+Shell Requirements
+Default Windows Shell
+
+const { spawn } = require('child_process')
+const ls = spawn('ls', ['-lh', '/usr'])
+
+ls.stdout.on('data', (data) => { })
+ls.stderr.on('data', (data) => { })
+ls.on('close', (data) => { })
+
+默认情况下，在Node.js的父进程与衍生的子进程之间会建立stdin, stdout, stderr的管道。数据能以非阻塞的方式在管道中流通，数据能以非阻塞的方式在管道中流通。注意，有些程序会在内部使用行缓冲IO。虽然这并不影响Node.js，但这意味着发送到子进程的数据可能无法被立即使用。
+child_process.spawn()方法会异步地衍生子进程，且不会阻塞Node.js事件循环。child_process.spawnSync()方法则以同步的方式提供同样的功能，但会阻塞事件循环，直到衍生的子进程退出或终止。
+child_process.exec()--衍生一个shell并在shell上运行命令，当完成时传入stdout和stderr到回调函数
+child_process.execFile()--类似child_process.exec()，但直接衍生命令，且无需先衍生一个shell
+child_process.fork()--衍生一个新的Node.js进程，并通过建立一个IPC通讯通道来调用一个指定的模块，该通道运行父进程与子进程之间相互发送信息
+child_process.execSync()--child_process.exec()的同步方法，会阻塞Node.js事件循环
+child_process.execFileSync()--child_process.execFile()的同步方法，会阻塞Node.js事件循环
+对于某些用例，如自动化的shell脚本，同步的方法可能更方便，大多数情况下，同步的方法会明显影响性能，因为它会拖延事件循环知道衍生进程完成。
+
+这些方法都会返回一个ChildProcess实例，这些对象实现了Node.js EventEmitter的API，允许父进程注册监听器函数，在子进程声明周期期间，当特定的时间发生时会调用这些函数。exec和execFile返回可以额外指定一个可选的callback函数，当子进程结束时会被调用。
+
+在Windows上衍生.bat和.cmd文件
+
+child_process.exec()和child_process.execFile()之间的重大区别会根据平台的不同而不同，在类Unix操作系统上(Unix\Linux\macOS)，child_process.execFile()效率更高，因为它不需要衍生一个shell。但是在Windows上，.bat和.cmd文件在没有终端的情况下是不可执行的，因此不能使用child_process.execFile()启动。在Windows下运行时，要调用.bat和.cmd文件，可以通过使用设置了shell选项的child_process.spawn()或使用child_process.exec()、或衍生cmd.exe并将.bat或.cmd文件作为一个参数传入（也就是shell选项和child_process.exec()所做的工作）。在任何情况下，如果脚本文件名包含了空格，则需要加上引号。
+
+const { spawn } = require('child_process')
+const bat = spawn('cmd.exe', ['/c', 'my.bat']);
+
+bat.stdout.on('data', (data) => {
+})
+
+bat.stderr.on('data', (data) => {
+})
+
+bat.on('exit', (code) => {
+})
+
+const { exec } = require('child_process')
+exec('my.bat', (err, stdout, stderr) => {
+    if (err) {
+        console.error(err);
+        return ;
+    }
+    console.log(stdout);
+});
+
+const bat = spawn('"my script.cmd"', ['a', 'b'], { shell: true });
+
+exec('"my script.cmd" a b', (err, stdout, stderr) => {
+})
+
+child_process.exec(command, options, callback)
+
+command: 要运行的命令，用空格分隔参数
+options：
+cwd-string-子进程的当前工作目录
+env-object-环境变量键值对
+encoding-utf8
+shell-string-用于执行命令的shell，在Unix上默认为'/bin/sh'，在Windows上默认为process.env.Comspec
+maxBuffer-stdout或stderr允许的最大字节数，默认为200*1024，如果超过限制，则子进程会被终止
+killSignal-string-integer--默认为SIGTERM
+uid-设置该进程的用户标识
+gid-设置该进程的组标识
+windowsHide-hide the subprocess console window that would normally be created on Windows systems
+
+error
+stdout
+stderr
+
+衍生一个shell，然后在 shell中执行command，且缓冲任何产生的输出，传入exec函数的command字符串会被shell直接处理，特殊字符需要相应处理。
+
+exec('"/path/to/test file/test.sh" args1 arg2');
+exec('echo "The \\$HOME variable is $HOME"');
+
+不要把未经检查的用户输入传入到该函数，任何包括shell元字符的输入都可被用于触发任何命令的执行
+
+child_process.execFile(file, args, options, callback)
+类似exec，除了不衍生一个shell，而是指定的可执行的file被直接衍生为一个新进程，更高效
+
+child_process.fork(modulePath, args, options)
+
+modulePath-string-要在子进程中运行的模块
+fork()方法是spawn的一个特殊情况，专门用于衍生新的node.js进程
+衍生的Nodejs子进程与两者之间建立的IPC通信信道的异常是独立于父进程的。每个进程都有自己的内存，使用自己的V8实例
+
+默认情况下，child_process.fork()会使用父进程中的process.execPath衍生新的Node.js实例。options对象中的execPath属性可以替换要使用的执行路径
+
+使用自定义的execPath启动的Node.js进程，会使用子进程的环境变量NODE_CHANNEL_FD中指定的文件描述符与父进程通信，fd上的输入和输出被分割成一行一行的JSON对象
+
+child_process.spawn(command, args, options)
+
+在Windows上，detached-true可以使子进程在父进程退出后继续运行
+在非Window上，则子进程会成为新的进程组和会话的领导者
+subprocess.unref,这样会导致父进程的事件循环不包含子进程的引用计数
+
+options.stdio
+pipe
+ignore
+inherit
+
+当在父进程和子进程之间建立了一个IPC通道，且子进程是一个Node.js进程，则子进程会带着未引用的IPC通道启动，直到子进程为process.on('disconnect')或message事件注册了一个事件句柄。这使得子进程可以再进程没有通过打开的IPC通道保持打开的情况下正常退出。
+
+child_process spawnSync execSync execFileSync 方法是同步的且会阻塞Node.js的事件循环，暂停任何额外代码的执行直到衍生的进程退出
+像这样的阻塞调用有利于简化普通用途的脚本任务，且启动时有利于简化应用配置的加载/处理
+
+execSync--当遇到超时且发送了killSignal时，该方法直到进程完全退出后才返回结果
+
+ChildProcess类的实例是EventEmitter，代表衍生的子进程
+ChildProcess的实例不被直接创建，
+
+close事件--
+code 如果子进程退出自身，则该值是退出码
+signal 子进程被终止时的信号
+当子进程的stdio流被关闭时会触发close事件
+
+disconnect事件
+在父进程调用subprocess.disconnect或子进程中调用process.disconnect()后会触发'disconnect'事件，断开后就不再发送或接受信息
+
+error事件
+进程无法被衍生
+进程无法被杀死
+向子进程发送信息失败
+
+exit事件
+子进程结束后会触发exit事件
+exit事件被触发时，子进程的stdio流可能依然是打开的
+
+message事件
+当一个子进程使用process.send()发送消息时会触发message事件
+
+subprocess.channel
+--当前子进程的IPC通道的引用
+subprocess.connected
+--是否仍可以从一个子进程发送和接受消息
+subprocess.disconnect
+关闭父进程和子进程之间的IPC通道，一旦没有其他的连接使其保持活跃，则允许子进程正常退出
+subprocess.kill(signal)
+subprocess.killed
+subprocess.pid
+subprocess.send(message, sendHandle, options, callback)
+
+（四）、cluster--集群
+
+cluster模块允许简单容易的创建共享服务器端口的子进程
+在Windows中，还不能在工作进程中设置管道服务器
+
+Worker对象包含了关于工作进程的所有public信息和方法
+
+（五）、console类
+
+new Console(stdout, stderr)
+console模块提供了一个简单的调试控制台，类似于Web浏览器提供的JavaScript控制台
+一个Console类，包含console.log() console.error() console.warn()，可以被用于写入到任何Node.js流。
+一个全局的Console实例，可被用于写入到process.stdout和process.stderr。全局的console使用时无需调用require('console')
+
+全局的console对象的方法既不总是同步的，也不总是异步的
+
+const myConsole = new console.Console(out, err)
+
+myConsole.log()
+
+console类可用于创建一个具有可配置的输出流的简单记录器。
+
+new Console(stdout, stderr)
+通过传入一个或两个可写流的实例，创建一个新的Console对象，stdout是一个可写流，用于打印日志或输出信息，stderr用于输出警告或错误，如果没有传入stderr，则警告或错误输出会被发送到stdout
+
+console.assert(value, message, args)
+
+console.clear()
+
+console.count(label)
+维护一个指定label的内部计数器并且输出到stdout指定label调用console.count()的次数
+
+console.countReset(label)
+重置指定label的内部计数器
+
+console.dir(obj, options)
+obj
+options-showHidden depth colors
+在obj上使用util.inspect()并打印结果字符串到stdout，该函数会绕过任何定义在obj上的自定义的inspect()函数，可选的options对象可以传入用于改变被格式化的字符串
+
+console.error(data, args)
+
+console.group(label)
+
+console.groupCollapsed()
+
+console.groupEnd()
+
+console.info(data, args)
+
+console.log()
+
+console.time(label)
+console.timeEnd(label)
+
+console.trace(message, ...args)
+
+console.warn(data, ...args)
+
+（六）、crypto
+
+crypto模块提供了加密功能，包含对OpenSSL的哈希、HMAC、加密、解密、签名以及验证功能的一整套封装。
+
+const hash = crypto.createHmac('sha256', 'abcdefg').update('I love cupcakes').digest('hex')
+
+try {
+    crypto = require('crypto')
+} catch (err) {
+    console.log('不支持 crypto !')
+}
+
+new crypto.Certificate()
+
+certificate.exportChallenge(spkac)--返回spkac数据结构的challenge部分
+
+certificate.exportPublicKey(spkac)--返回spkac数据机构的公匙部分
+
+certificate.verifySpkac(spkac)--spkac数据结构是否有效
+
+Cipher
+cipher类的实例用于加密数据，这个类可以用在用在以下两种方法中的一种
+
+cipher.write()
+cipher.update()
+cipher.final(outputEncoding)
+返回任何加密的内容
+cipher.setAAD(buffer)
+当使用经过验证的加密模式时，cipher.setAAD()方法设置用于additional authenticated data输入参数的值
+cipher.getAuthTag()
+cipher.setAutoPadding()
+cipher.update(data, inputEncoding, outputEncoding)
+
+Decipher
+Decipher的实例用于解密数据，这个类可以
+
+DiffieHellman
+
+diffieHellman.computeSectet(otherPublicKey, inputEncoding, outputEncoding)
+diffieHellman.generateKeys(encoding)
+diffieHellman.getGenerator(encoding)
+diffieHellman.getPrime(encoding)
+diffieHellman.getPrivateKey(encoding)
+diffieHellman.getPublicKey(encoding)
+diffieHellman.verifyError
+
+Elliptic Curve Diffie-Hellman
+椭圆曲线Diffie-Hellman
+ECDH
+
+Hash类用于创建数据哈希值的工具类
+crypto.createHash('sha256')
+
+Hmac类是用来创建Hmac摘要的工具
+
+Sign
+
+Verify()
+Verify类是验证签名的工具
+
+crypto.constants
+crypto.DEFAULT_ENCODING
+crypto.fips
+crypto.createCipher(algorithm, password, options)
+crypto.privateDecrypt(privateKey, buffer)
+crypto.privateEncrypt(privateKey, buffer)
+
+（七）、dgram-数据报
+
+dgram模块提供了UDP数据包socket的实现
+
+dgram.Socket对象是一个封装了数据包函数功能的EventEmitter
+
+close
+error
+listening
+message
+
+socket.addMembership(multicastAddress, multicastInterface)
+通知内核将multicastAddress和multicastInterface提供的多路传送集合通过IP_ADD_MEMBERSHIP这个socket选项结合起来。若multicastInterface参数未指定，操作系统将会选择一个接口并向其添加成员，可以在每个接口上调用一次addMembership方法。
+
+socket.address()-返回一个包含socket地址信息的对象，对于UDP socket，该对象将包含address,family和port属性
+
+socket.bind(port, address, callback)
+
+socket.close(callback)
+socket.dropMembership(multicastAddress, multicastInterface)
+socket.getRecvBufferSize()
+socket.getSendBufferSize()
+
+socket.ref()
+socket.send(msg, offset, length, port, address, callback)
+
+socket.setBroadcast(flag)
+
+socket.setMulticastInterface(multicastInterface)
+
+const socket = dgram.createSocket('udp6')
+
+dgram.createSocket(options, callback)
+dgram.createSocket(type, callback)
+
+（八）、dns-域名服务器
+
+1、使用底层操作系统工具进行域名解析
+2、连接到一个真实的DNS服务器进行域名解析，且始终使用网络进行DNS查询
+
+const { Resolver } = require('dns')
+const resolver = new Resolver()
+resolver.setServers(['4.4.4.4'])
+
+resolver.resolve4('example.org', (err, address) => {})
+
+getServers
+setServers
+resolve
+resolve4
+resolve6
+resolveAny
+resolveCname
+resolveMx
+resolveNaptr
+resolveNs
+resolvePtr
+resolveSoa
+resolveSrv
+resolveTxt
+reverse
+
+（九）、Error-异常
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

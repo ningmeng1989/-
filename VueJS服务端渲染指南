@@ -1,0 +1,285 @@
+（一）、介绍
+
+【1】、版本要求
+vue vue-server-renderer2.3.0+
+vue-router2.5.0+
+vue-loader12.0.0+ vue-style-loader3.0.0+
+
+【2】、什么是服务端渲染
+VueJS 是构建客户端应用程序的框架，默认情况下，可以在浏览器输入Vue组件，进行生成DOM和操作DOM，然而，也可以将同一个组件渲染为服务器端的HTML字符串，将他们直接发送到浏览器，最后将静态标记“混合”为客户端上完全交互的应用程序
+服务器端渲染的Vue.js应用程序也可以被认为是“同构”或“通用”，因为应用程序的大部分代码都可以在服务器和客户端上运行
+
+【3】、为什么使用服务器端渲染
+与传统SPA相比，服务器端渲染的优势主要在于：
+1.更好的SEO
+如果SEO对你的站点至关重要，而你的页面又是异步获取内容，则你可能需要服务器端渲染解决此问题
+2.更快的内容到达时间
+对于那些 内容到达时间与转化率直接相关 的应用程序而言，服务器端渲染至关重要
+3.使用服务器端渲染时还需要有一些权衡之处
+（1）、开发条件限制，浏览器特定的代码，只能在某些生命周期钩子函数中使用，一些外部扩展库（external library）可能需要特殊处理，才能在服务器渲染应用程序中进行。
+（2）、涉及构建设置和部署的更多要求，与可以部署在任何静态文件服务器上的完全静态单页面应用程序不同，服务器渲染应用程序，需要处于 Node.js server运行环境。
+（3）、更多的服务器端负载，在Node.js中渲染完整的应用程序，显然会比仅仅提供静态文件的server更加大量占用CPU资源（CPU-intensive -- CPU密集），因此如果你预料在高流量环境下使用，请准备相应的服务器负载，并明智的采用缓存策略。
+
+在对你的应用程序使用服务器端渲染之前，你应该问第一个问题是否真的需要它。这主要取决于内容到达时间对应用程序的重要程度。
+
+【4】、服务器端渲染 VS 预渲染
+如果你调研服务器端渲染指示用来改善少数营销页面的SEO，那么你可能需要预渲染，无需使用web服务器实时动态编译HTML，在构建时简单地生成针对特定路由的静态HTML文件，优点是设置预渲染更简单，并可以将你的前端作为一个完全静态的站点。如果使用webpack，可以使用prerender-spa-plugin
+
+（二）、基本用法
+
+【1】、
+const Vue = require('vue')
+const app = new Vue({
+    template: `<div>Hello World</div>`
+})
+
+const renderer = require('vue-server-renderer').createRenderer()
+
+renderer.renderToString(app, (err, html) => {
+    if (err) throw err
+    console.log(html)
+})
+【2】、与服务器集成
+const Vue = require('vue')
+const server = require('express')()
+const renderer = require('vue-server-renderer').createRenderer()
+server.get('*', (req, res) => {
+    const app = new Vue({
+        data: {
+            url: req.url
+        },
+        template: `<div>访问的URL是：{{ url }}</div>`
+    })
+    renderer.renderToString(app, (err, html) => {
+        if (err) {
+            res.status(500).end('Internal Server Error')
+            return
+        }
+        res.end(`
+            <!DOCTYPE html>
+            <html lang="en">
+                <head><title>Hello</title></head>
+                <body>${html}</body>
+            </html>
+        `)
+    })
+})
+server.listen(8080)
+【3】、使用一个页面模板
+当你在渲染Vue应用程序时，renderer只从应用程序中生成HTML标记，在这个示例中，我们必须使用一个额外的HTML页面包裹容器，来包裹生成的HTML标记。
+为了简化这些，你可以直接在创建renderer时提供一个页面模板，多数时候，我们会将页面模板放在特有的文件中，例如index.template.html
+<!DOCTYPE html>
+<html lang="en">
+    <head><title>Hello</title></head>
+    <body>
+        <!--vue-ssr-outlet-->
+    </body>
+</html>
+
+const renderer = createRenderer({
+    template: require('fs').readFileSync('./index/template.html', 'utf-8')
+})
+renderer.renderToString(app, (err, html) => {
+    // will be the full page with app content injected
+})
+【4】、模板插值
+模板还支持简单插值，给定如下模板
+<html>
+    <head>
+        <title>{{ title }}</title>
+        {{{ meta }}}
+    </head>
+    <body>
+    </body>
+</html>
+我们可以通过传入一个“渲染上下文对象”，作为renderToString函数的第二个参数，来提供插值数据
+const context = {
+    title: 'hello',
+    meta: ``
+}
+renderer.renderToString(app, context, (err, html) => {
+    // page title will be "Hello"
+    // with meta tags injected
+})
+也可以与Vue应用程序实例共享context对象，允许模板插值中的组件动态地注册数据
+此外，模板支持一些高级特性，例如：
+在使用*.vue组件时，自动注入 关键的CSS
+在使用clientManifest时，自动注入 资源链接和资源预加载提示
+在嵌入vuex状态进行客户端融合时，自动注入以及XSS防御
+
+（三）、编写通用代码
+通用代码--运行在服务器和客户端的代码，由于用例和平台API的差异，当运行在不同环境中时，我们的代码将不会完全相同
+
+【1】、服务器上的数据响应
+在纯客户端应用程序中，每个用户会在他们各自的浏览器中使用新的应用程序实例，对于服务器端渲染，我们也希望如此，每个请求应该都是全新的、独立的应用程序实例，以便不会有交叉请求造成的状态污染。
+因为实际的渲染过程需要确定性，所以我们也将在服务器上“预取”数据，这意味着在我们开始渲染时，我们的应用程序就已经解析完全其状态，也就是说，将数据进行响应式的过程在服务器上是多余的，所以默认情况下禁用。禁用响应式数据，还可以避免将数据转换为响应式对象的性能开销
+
+【2】、组件生命周期钩子函数
+没有动态更新，只有beforeCreated和created会在服务器渲染过程中被调用，这就是说任何其他生命周期钩子函数中的代码，只会在客户端执行。
+
+此外，应该避免在beforeCreate和created生命周期时产生全局副作用的代码，例如在其中使用setInterval设置timer，SSR期间并不会调用销毁钩子函数
+
+【3】、访问特定平台API
+通用代码不可接受特定平台的API，因此如果你的代码中，直接使用了像window或document，这种仅浏览器可用的全局变量，则会在Node.js中执行时抛出错误，反之也是如此。
+对于共享于服务器和客户端，但用于不同平台API的任务，建议将平台特定实现包含在通用API中，或者使用为你执行此操作的库
+
+【4】、自定义指令
+大多数自定义指令直接操作DOM，因此会在服务器端渲染过程中导致错误
+推荐使用组件作为抽象机制
+如果你有一个自定义指令，但是不是很容易替换为组件，则可以在创建服务器renderer时，使用directives选项所提供的“服务器端版本”
+
+（四）、源码结构
+【1】、避免状态单例
+当编写纯客户端代码时，我们习惯于每次在新的上下文中对代码进行取值，但是，Node.js服务器时一个长期运行的进程，当我们的代码进入该进程时，它将进行一次取值并留存在内存中。这意味着如果创建一个单例对象，它将在每个传入的请求之间共享。
+我们为每个请求创建一个新的根Vue实例，这与每个用户在自己的浏览器中使用应用程序的实例类似，如果我们在多个请求之间使用一个共享的实例，很容易导致交叉请求状态污染
+我们不应该直接创建一个应用程序实例，而是应该暴露一个可以重复执行的工厂函数，为每个请求创建新的应用程序实例
+
+const Vue = require('vue')
+module.exports = function createApp (context) {
+    return new Vue({
+        data: {
+            url: context.url
+        },
+        template: `<div>访问的URL是： {{ url }}</div>`
+    })
+}
+
+并且服务端的代码变为：
+
+const createApp = require('./app')
+server.get('*', (req, res) => {
+    const context = { url: req.url }
+    const app = createApp(context)
+    renderer.renderToString(app, (err, html) => {
+        res.end(html)
+    })
+})
+
+同样的规则也适用于router,store和event bus 实例，你不应该直接
+
+app.js
+
+import Vue from 'vue'
+import App from './App.vue'
+export function createApp () {
+    const app = new Vue({
+        render: h => h(App)
+    })
+    return { app }
+}
+
+entry-client.js
+
+import { createApp } from './app'
+const { app } = createApp()
+app.$mount('#app')
+
+entry-server.js
+
+import { createApp } from './app'
+export default context => {
+    const { app } = createApp()
+    return app
+}
+
+（四）、路由和代码分割
+
+【1】、使用vue-router的路由
+
+import Vue from 'vue'
+import Router from 'vue-router'
+Vue.use(Router)
+export function createRouter () {
+    return new Router({
+        mode: 'history',
+        routes: [
+            // ...
+        ]
+    })
+}
+
+import { createApp } from './app'
+export default context => {
+    return new Promise((resolve, reject) => {
+        const {app, router} = createApp()
+        router.push(context.url)
+        router.onReady(() => {
+            const matchedComponents = router.getMatchedComponents()
+            if (!matchedComponents.length) {
+                return reject({code: 404})
+            }
+            resolve(app)
+        }, reject)
+    })
+}
+
+const createApp = require('path/to/built-server-bundle.js')
+server.get('*', (req, res) => {
+    const context = {url: req.url}
+    createApp(context).then(app => {
+        renderer.renderToString(app, (err, html) => {
+            if (err) {
+                if (err.code === 404) {
+                    res.status(404).end('Page not found')
+                } else {
+                    res.status(500).end('Internal Server Error')
+                }
+            } else {
+                res.end(html)
+            }
+        })
+    })
+})
+
+【2】、代码分割
+
+应用程序的代码分割或惰性加载，有助于减少浏览器在初始渲染中下载的资源体积，可以极大地改善大体积bundle的可交互时间
+
+import Foo from './Foo.vue'
+
+改为：
+const Foo = () => import('./Foo.vue')
+
+import { createApp } from './app'
+const {app, router} = createApp()
+router.onReady(() => {
+    app.$mount('#app')
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

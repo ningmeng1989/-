@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Express</title>
+</head>
+<body>
+
+Express 基于Node.js平台，快速、开放、极简的web开发框架
+
+Express是一个基于Node.js平台的极简、灵活的Web应用开发框架，它提供一系列强大的特性，帮助你创建各种web和移动设备应用
+
+丰富的HTTP快捷方式和任意排列组合的Connect中间件，让你创建健壮、友好的API变得既快速又简单
+
+Express不对Node.js已有的特性进行二次抽象，我们只是在它之上扩展了Web应用所需的基本功能
+
+var express = require('express')
+var app = express()
+
+app.get('/', function (req, res) {
+    res.send('Hello World!');
+})
+
+var server = app.listen(3000, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+
+    console.log('Example app listening at http://%s:%s', host, port);
+})
+
+通过应用生成器工具 express 可以快速创建一个应用的骨架
+
+路由（Routing）是由一个URI和一个特定的HTTP方法（GET、POST等）组成的，涉及到应用如何响应客户端对某个网站节点的访问
+
+每一个路由都可以有一个或多个处理器函数，当匹配到路由时，这些函数将被执行
+
+路由的定义
+
+app.get('/', function (req, res) {
+    res.send('Hello World');
+})
+
+express.static--静态文件，图片、CSS、JavaScript文件等
+
+app.use(express.static('public'))
+
+如果你的静态资源存放在多个目录下面，可以多次调用express.static中间件
+
+访问静态文件时，express.static中间件会根据目录添加的顺序查找所需的文件
+
+如果你希望所有通过express.static访问的文件都存放在一个 虚拟 目录下面，可以通过为静态资源目录指定一个挂载路径的方式来实现，
+
+app.use('/static', express.static('public'))
+
+我的应用该如何组织
+
+在其他所有中间件的后面添加一个处理404的中间件
+
+如何设置一个错误处理器
+
+app.use(function(err, req, res, next){
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+不需要通过res.render()渲染HTML，可以通过res.sendFile()直接对外输出HTML文件，如果你需要对外提供的资源文件很多，可以使用express.static()中间件
+
+路由
+
+路由是指如何定义应用的端点（URIs）以及如何响应客户端的请求
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
