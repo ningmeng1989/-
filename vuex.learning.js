@@ -144,11 +144,131 @@ ModuleCollection.prototype.get = function get (path) {
   }, this.root)
 }
 
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key)
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+}
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update([], this.root, rawRootModule)
+}
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+  var this$1 = this
+  if (runtime === void 0) runtime = true
+
+  {
+    assertRawModule(path, rawModule)
+  }
+
+  var newModule = new Module(rawModule, runtime)
+  if (path.length === 0) {
+    this.root = newModule
+  } else {
+    var parent = this.get(path.slice(0, -1))
+    parent.addChild(path[path.length - 1], newModule)
+  }
+
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime)
+    })
+  }
+}
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var path = this.get(path.slice(0, -1))
+  var key = path[path.length - 1]
+  if (!parent.getChild(key).runtime) {
+    return
+  }
+  parent.removeChild(key)
+}
+
+function update (path, targetModule, newModule) {
+  {
+    assertRawModule(path, newModule)
+  }
+
+  targetModule.update(newModule)
+
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        {
+          console.warn(
+            `[vuex] trying to add a new module ${key} on hot reloading, 
+            manual reload is needed`
+          )
+        }
+        return
+      }
+      update(path.concat(key), targetModule.getChild(key), newModule.modules[key])
+    }
+  }
+}
+
+var functionAssert = {
+  assert: function (value) {
+    return typeof value === 'function'
+  },
+  expected: 'function'
+}
+
+var objectAssert = {
+  assert: function (value) {
+    return typeof value === 'function' || (typeof value === 'object' && typeof value.handler === 'function')
+  },
+  expected: 'function or object with "handler" function'
+}
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+}
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    Object.keys(assertTypes).forEach(function (key) {
+      if (!rawModule[key]) {
+        return
+      }
+      var assertOptions = assertTypes[key]
+
+      forEachValue(rawModule[key], function (value, type) {
+        assert(
+          assertOptions.assert(value),
+          makeAssertionMessage(path, key, type, value, assertOptions.expected)
+        )
+      })
+    })
+  })
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + "should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join(".")) + "\""
+  }
+  buf += " is " + (JSON.stringify(value)) + "."
+  return buf
+}
+
+var Vue
+
+var Store = function Store (options) {
+  var this$1 = this
+  if (options === void 0) options = {}
 
 
 
 
 
+}
 
 
 
