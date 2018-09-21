@@ -116,11 +116,63 @@ exportPlugins(exports, {
   Template: () => require('./Template'),
   UmdMainTemplatePlugin: () => require('./UmdMainTemplatePlugin'),
   WatchIgnorePlugin: () => require('./WatchIgnorePlugin')
+})
+exportPlugins((exports.dependencies = {}), {
+  DependencyReference: () => require('./dependencies/DependencyReference')
+})
+exportPlugins((exports.optimize = {}), {
+  AggressiveMergingPlugin: () => require('./optimize/AggressiveMergingPlugin'),
+  AggressiveSplittingPlugin: () => require('./optimize/AggressiveSplittingPlugin'),
+  ChunkModuleIdRangePlugin: () => require('./optimize/ChunkModuleIdRangePlugin'),
+  LimitChunkCountPlugin: () => require('./optimize/LimitChunkCountPlugin'),
+  MinChunkSizePlugin: () => require('./optimize/MinChunkSizePlugin'),
+  ModuleConcatenationPlugin: () => require('./optimize/ModuleConcatenationPlugin'),
+  OccurenceOrderPlugin: () => require('./optimize/OccurrenceOrderPlugin'),
+  OccurenceModuleOrderPlugin: () => require('./optimize/OccurenModuleOrderPlugin'),
+  OccurenceChunkOrderPlugin: () => require('./optimize/OccurenceChunkOrderPlugin'),
+  RuntimeChunkPlugin: () => require('./optimize/RuntimeChunkPlugin'),
+  SideEffectsFlagPlugin: () => require('./optimize/SideEffectsFlagPlugin'),
+  SplitChunksPlugin: () => require('./optimize/SplitChunksPlugin')
+})
+exportPlugins((exports.web = {}), {
+  FetchCompileWasmTemplatePlugin: () => require('./web/FetchCompileWasmTemplatePlugin'),
+  JsonpTemplatePlugin: () => require('./web/JsonpTemplatePlugin')
+})
+exportPlugins((exports.webworker = {}), {
+  WebWorkerTemplatePlugin: () => require('./webworker/WebWorkerTemplatePlugin')
+})
+exportPlugins((exports.node = {}), {
+  NodeTemplatePlugin: () => require('./node/NodeTemplatePlugin'),
+  ReadFileCompileWasmTemplatePlugin: () => require('./node/ReadFileCompileWasmTemplatePlugin')
+})
+exportPlugins((exports.debug = {}), {
+  ProfilingPlugin: () => require('./debug/ProfilingPlugin')
+})
+exportPlugins((exports.util = {}), {
+  createHash: () => require('./util/createHash')
+})
+
+const defineMissingPluginError = (namespace, pluginName, errorMessage) => {
+  Object.defineProperty(namespace, pluginName, {
+    configurable: false,
+    enumerable: true,
+    get () {
+      throw new RemovedPluginError(errorMessage)
+    }
+  })
+}
+
+defineMissingPluginError(
+  exports.optimize,
+  'UglifyJSPlugin',
+  'Webpack.optimize.UglifyJSPlugin has been removed, please use config.optimization.minimize instead.'
 )
 
-
-
-
+defineMissingPluginError(
+  exports.optimize,
+  'CommonsChunkPlugin',
+  'Webpack.optimize.CommonsChunkPlugin has been removed, please use config.optimization.splitChunks instead.'
+)
 
 
 
